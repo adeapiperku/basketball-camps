@@ -34,7 +34,7 @@ public class Camp extends BaseEntity {
 
    @NotNull
    @DecimalMin(value = "0.0", inclusive = false)
-   @Column(nullable = false, precision = 10, scale = 2)
+   @Column(nullable = false, precision = 5, scale = 2)
    private BigDecimal price;
 
    @NotNull

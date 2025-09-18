@@ -1,5 +1,7 @@
 package com.basketball_camps.model;
 
+import com.basketball_camps.enums.JerseySize;
+
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
