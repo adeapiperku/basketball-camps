@@ -47,7 +47,6 @@ function AdminForm(props) {
     [onFieldChange],
   );
 
-  // No numeric fields in Admin now; remove number handler
 
   const handleDateFieldChange = React.useCallback(
     (event) => {

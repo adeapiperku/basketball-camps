@@ -40,10 +40,11 @@ function AdminEditForm({ initialValues, onSubmit }) {
     (name, value) => {
       const validateField = async (values) => {
         const issues = [];
-        if (!values.name) issues.push({ path: ['name'], message: 'Name is required' });
-        if (!values.age) issues.push({ path: ['age'], message: 'Age is required' });
-        if (!values.joinDate) issues.push({ path: ['joinDate'], message: 'Join date is required' });
-        if (!values.role) issues.push({ path: ['role'], message: 'Role is required' });
+        if (!formValues.firstName) issues.push({ path: ['firstName'], message: 'First name is required' });
+        if (!formValues.lastName) issues.push({ path: ['lastName'], message: 'Last name is required' });
+        if (!formValues.email) issues.push({ path: ['email'], message: 'Email is required' });
+        if (!formValues.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
+        if (!formValues.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
         setFormErrors({
           ...formErrors,
           [name]: issues?.find((issue) => issue.path?.[0] === name)?.message,
@@ -64,10 +65,11 @@ function AdminEditForm({ initialValues, onSubmit }) {
 
   const handleFormSubmit = React.useCallback(async () => {
     const issues = [];
-    if (!formValues.name) issues.push({ path: ['name'], message: 'Name is required' });
-    if (!formValues.age) issues.push({ path: ['age'], message: 'Age is required' });
-    if (!formValues.joinDate) issues.push({ path: ['joinDate'], message: 'Join date is required' });
-    if (!formValues.role) issues.push({ path: ['role'], message: 'Role is required' });
+      if (!formValues.firstName) issues.push({ path: ['firstName'], message: 'First name is required' });
+      if (!formValues.lastName) issues.push({ path: ['lastName'], message: 'Last name is required' });
+      if (!formValues.email) issues.push({ path: ['email'], message: 'Email is required' });
+      if (!formValues.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
+      if (!formValues.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
     if (issues && issues.length > 0) {
       setFormErrors(
         Object.fromEntries(issues.map((issue) => [issue.path?.[0], issue.message])),
