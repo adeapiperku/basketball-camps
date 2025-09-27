@@ -1,6 +1,9 @@
 import { Navigate, Route } from "react-router-dom";
 import DashboardLayout from "../components/DashboardLayout";
 import Home from "../page/home/Home";
+import SignIn from "../page/home/SignIn";
+// import SignUp from "../page/home/SignUp";
+import PrivateRoute from "./PrivateRoute";
 import AdminList from "../page/admin/admins/AdminList";
 import AdminShow from "../page/admin/admins/AdminShow";
 import AdminCreate from "../page/admin/admins/AdminCreate";
@@ -17,9 +20,19 @@ const AppRoutes = [
   // Public Home page
   <Route key="home" path="/home" element={<Home />} />,
 
-  // Pathless layout wrapper keeps existing hrefs like /admins and /schools working
+  // Auth routes
+  <Route key="sign-in" path="/sign-in" element={<SignIn />} />,
+  // <Route key="sign-up" path="/sign-up" element={<SignUp />} />,
+
   (
-    <Route key="layout" element={<DashboardLayout />}>
+    <Route
+      key="layout"
+      element={
+        <PrivateRoute allowedRoles={["admin"]}>
+          <DashboardLayout />
+        </PrivateRoute>
+      }
+    >
       {/* Admin routes */}
       <Route path="admins" element={<AdminList />} />
       <Route path="admins/new" element={<AdminCreate />} />
