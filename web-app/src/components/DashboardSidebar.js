@@ -16,6 +16,7 @@ import {
   getDrawerSxTransitionMixin,
   getDrawerWidthTransitionMixin,
 } from '../mixins';
+import DomainIcon from '@mui/icons-material/Domain';
 
 function DashboardSidebar({
   expanded = true,
@@ -118,6 +119,13 @@ function DashboardSidebar({
               icon={<AdminPanelSettingsIcon />}
               href="/admins"
               selected={!!matchPath('/admins/*', pathname) || pathname === '/'}
+            /> 
+            <DashboardSidebarPageItem
+              id="schools"
+              title="Schools"
+              icon={<DomainIcon />}
+              href="/schools"
+              selected={!!matchPath('/schools/*', pathname) || pathname === '/'}
             />           
           </List>
         </Box>
