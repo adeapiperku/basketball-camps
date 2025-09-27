@@ -40,11 +40,11 @@ function AdminEditForm({ initialValues, onSubmit }) {
     (name, value) => {
       const validateField = async (values) => {
         const issues = [];
-        if (!formValues.firstName) issues.push({ path: ['firstName'], message: 'First name is required' });
-        if (!formValues.lastName) issues.push({ path: ['lastName'], message: 'Last name is required' });
-        if (!formValues.email) issues.push({ path: ['email'], message: 'Email is required' });
-        if (!formValues.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
-        if (!formValues.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
+        if (!values.firstName) issues.push({ path: ['firstName'], message: 'First name is required' });
+        if (!values.lastName) issues.push({ path: ['lastName'], message: 'Last name is required' });
+        if (!values.email) issues.push({ path: ['email'], message: 'Email is required' });
+        if (!values.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
+        if (!values.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
         setFormErrors({
           ...formErrors,
           [name]: issues?.find((issue) => issue.path?.[0] === name)?.message,
@@ -133,8 +133,6 @@ export default function AdminEdit() {
     try {
       const service = new AdminService();
       const showData = await service.findById(Number(adminId));
-      
-      // Format the birthDate if it exists
       if (showData.birthDate) {
         showData.birthDate = new Date(showData.birthDate).toISOString().split('T')[0];
       }
