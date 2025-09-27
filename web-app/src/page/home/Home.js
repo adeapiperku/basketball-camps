@@ -22,6 +22,26 @@ export default function Home() {
         >
           Go to Dashboard
         </Button>
+        <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'center' }}>
+          <Button
+            variant="outlined"
+            size="large"
+            color="primary"
+            component={RouterLink}
+            to="/sign-in"
+          >
+            Sign In
+          </Button>
+          {/* <Button
+            variant="contained"
+            size="large"
+            color="secondary"
+            component={RouterLink}
+            to="/sign-up"
+          >
+            Sign Up
+          </Button> */}
+        </Box>
       </Box>
     </Container>
   );
