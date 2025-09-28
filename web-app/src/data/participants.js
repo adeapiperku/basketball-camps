@@ -153,6 +153,10 @@ export function validate(participant) {
     issues = [...issues, { message: 'Phone number is required', path: ['phoneNumber'] }];
   }
 
+  if (!participant.type) {
+    issues = [...issues, { message: 'Type is required', path: ['type'] }];
+  }
+
   if (!participant.password) {
     issues = [...issues, { message: 'Password is required', path: ['password'] }];
   }

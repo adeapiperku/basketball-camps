@@ -141,6 +141,18 @@ function CoachForm(props) {
               fullWidth
             />
           </Grid>
+          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
+            <TextField
+              value={formValues.type ?? ''}
+              onChange={handleTextFieldChange}
+              name="type"
+              label="Type"
+              placeholder="e.g., Coach"
+              error={!!formErrors.type}
+              helperText={formErrors.type ?? ' '}
+              fullWidth
+            />
+          </Grid>
         </Grid>
       </FormGroup>
       <Stack direction="row" spacing={2} justifyContent="space-between">
@@ -174,6 +186,7 @@ CoachForm.propTypes = {
       password: PropTypes.string,
       birthDate: PropTypes.string,
       phoneNumber: PropTypes.string,
+      type: PropTypes.string,
     }).isRequired,
     values: PropTypes.shape({
       id: PropTypes.number,
@@ -183,6 +196,7 @@ CoachForm.propTypes = {
       password: PropTypes.string,
       birthDate: PropTypes.string,
       phoneNumber: PropTypes.string,
+      type: PropTypes.string,
     }).isRequired,
   }).isRequired,
   onFieldChange: PropTypes.func.isRequired,

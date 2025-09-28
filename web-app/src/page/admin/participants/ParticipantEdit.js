@@ -45,6 +45,7 @@ function ParticipantEditForm({ initialValues, onSubmit }) {
         if (!values.email) issues.push({ path: ['email'], message: 'Email is required' });
         if (!values.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
         if (!values.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
+        if (!values.type) issues.push({ path: ['type'], message: 'Type is required' });
         setFormErrors({
           ...formErrors,
           [name]: issues?.find((issue) => issue.path?.[0] === name)?.message,
@@ -70,6 +71,7 @@ function ParticipantEditForm({ initialValues, onSubmit }) {
     if (!formValues.email) issues.push({ path: ['email'], message: 'Email is required' });
     if (!formValues.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
     if (!formValues.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
+    if (!formValues.type) issues.push({ path: ['type'], message: 'Type is required' });
     if (issues && issues.length > 0) {
       setFormErrors(
         Object.fromEntries(issues.map((issue) => [issue.path?.[0], issue.message])),
@@ -161,6 +163,7 @@ export default function ParticipantEdit() {
         medicalNotes: showData.medicalNotes ?? '',
         schoolId: showData.school?.id ?? '',
         birthDate,
+        type: showData.type ?? '',
       };
       setParticipant(mapped);
     } catch (showDataError) {
@@ -186,6 +189,7 @@ export default function ParticipantEdit() {
         jerseySize: formValues.jerseySize || null,
         medicalNotes: formValues.medicalNotes || null,
         school: formValues.schoolId ? { id: Number(formValues.schoolId) } : null,
+        type: formValues.type || '',
       };
       const updatedData = await service.update(payload);
       setParticipant({ ...formValues, id: Number(participantId) });
