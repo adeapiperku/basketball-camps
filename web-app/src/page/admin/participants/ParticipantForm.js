@@ -171,6 +171,18 @@ function ParticipantForm(props) {
           </Grid>
           <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
             <TextField
+              value={formValues.type ?? ''}
+              onChange={handleTextFieldChange}
+              name="type"
+              label="Type"
+              placeholder="e.g., Participant"
+              error={!!formErrors.type}
+              helperText={formErrors.type ?? ' '}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
+            <TextField
               value={formValues.emergencyContactPhone ?? ''}
               onChange={handleTextFieldChange}
               name="emergencyContactPhone"
@@ -273,6 +285,7 @@ ParticipantForm.propTypes = {
       jerseySize: PropTypes.string,
       medicalNotes: PropTypes.string,
       schoolId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      type: PropTypes.string,
     }).isRequired,
     values: PropTypes.shape({
       id: PropTypes.number,
@@ -286,6 +299,7 @@ ParticipantForm.propTypes = {
       jerseySize: PropTypes.string,
       medicalNotes: PropTypes.string,
       schoolId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      type: PropTypes.string,
     }).isRequired,
   }).isRequired,
   onFieldChange: PropTypes.func.isRequired,

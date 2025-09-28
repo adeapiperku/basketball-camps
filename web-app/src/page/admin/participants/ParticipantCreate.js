@@ -16,6 +16,7 @@ const INITIAL_FORM_VALUES = {
   jerseySize: '',
   schoolId: '',
   medicalNotes: '',
+  type: '',
 };
 
 export default function ParticipantCreate() {
@@ -54,6 +55,7 @@ export default function ParticipantCreate() {
         if (!values.password) issues.push({ path: ['password'], message: 'Password is required' });
         if (!values.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
         if (!values.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
+        if (!values.type) issues.push({ path: ['type'], message: 'Type is required' });
         setFormErrors({
           ...formErrors,
           [name]: issues?.find((issue) => issue.path?.[0] === name)?.message,
@@ -80,6 +82,7 @@ export default function ParticipantCreate() {
     if (!formValues.password) issues.push({ path: ['password'], message: 'Password is required' });
     if (!formValues.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
     if (!formValues.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
+    if (!formValues.type) issues.push({ path: ['type'], message: 'Type is required' });
     if (issues && issues.length > 0) {
       setFormErrors(
         Object.fromEntries(issues.map((issue) => [issue.path?.[0], issue.message])),
@@ -101,6 +104,7 @@ export default function ParticipantCreate() {
         jerseySize: formValues.jerseySize || null,
         medicalNotes: formValues.medicalNotes || null,
         school: formValues.schoolId ? { id: Number(formValues.schoolId) } : null,
+        type: formValues.type || '',
       };
       await service.create(payload);
       notifications.show('Participant created successfully.', {

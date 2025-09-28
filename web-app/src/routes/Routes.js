@@ -61,7 +61,7 @@ const AppRoutes = [
       <Route path="coaches/new" element={<CoachCreate />} />
       <Route path="coaches/:coachId" element={<CoachShow />} />
       <Route path="coaches/:coachId/edit" element={<CoachEdit />} />
-
+      
     </Route>
   ),
 ];

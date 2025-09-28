@@ -168,6 +168,14 @@ export default function AdminShow() {
               </Typography>
             </Paper>
           </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Paper sx={{ px: 2, py: 1 }}>
+              <Typography variant="overline">Type</Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                {admin.type}
+              </Typography>
+            </Paper>
+          </Grid>
         </Grid>
         <Divider sx={{ my: 3 }} />
         <Stack direction="row" spacing={2} justifyContent="space-between">

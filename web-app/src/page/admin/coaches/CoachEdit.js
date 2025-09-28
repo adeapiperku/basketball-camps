@@ -45,6 +45,7 @@ function CoachEditForm({ initialValues, onSubmit }) {
         if (!values.email) issues.push({ path: ['email'], message: 'Email is required' });
         if (!values.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
         if (!values.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
+        if (!values.type) issues.push({ path: ['type'], message: 'Type is required' });
         setFormErrors({
           ...formErrors,
           [name]: issues?.find((issue) => issue.path?.[0] === name)?.message,
@@ -70,6 +71,7 @@ function CoachEditForm({ initialValues, onSubmit }) {
     if (!formValues.email) issues.push({ path: ['email'], message: 'Email is required' });
     if (!formValues.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
     if (!formValues.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
+    if (!formValues.type) issues.push({ path: ['type'], message: 'Type is required' });
     if (issues && issues.length > 0) {
       setFormErrors(
         Object.fromEntries(issues.map((issue) => [issue.path?.[0], issue.message]))
@@ -153,6 +155,7 @@ export default function CoachEdit() {
         email: showData.email ?? '',
         phoneNumber: showData.phoneNumber ?? '',
         birthDate,
+        type: showData.type ?? '',
       };
       setCoach(mapped);
     } catch (showDataError) {
@@ -174,6 +177,7 @@ export default function CoachEdit() {
         email: formValues.email,
         birthDate: formValues.birthDate || null,
         phoneNumber: formValues.phoneNumber || null,
+        type: formValues.type || '',
       };
       await service.update(payload);
       setCoach({ ...formValues, id: Number(coachId) });

@@ -153,6 +153,18 @@ function AdminForm(props) {
               fullWidth
             />
           </Grid>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
+            <TextField
+              value={formValues.type ?? ''}
+              onChange={handleTextFieldChange}
+              name="type"
+              label="Type"
+              placeholder="e.g., Super, Manager"
+              error={!!formErrors.type}
+              helperText={formErrors.type ?? ' '}
+              fullWidth
+            />
+          </Grid>
           {Boolean(!formValues.id) && (
             <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
               <TextField
@@ -195,18 +207,23 @@ AdminForm.propTypes = {
   backButtonPath: PropTypes.string,
   formState: PropTypes.shape({
     errors: PropTypes.shape({
-      age: PropTypes.string,
-      isFullTime: PropTypes.string,
-      joinDate: PropTypes.string,
-      name: PropTypes.string,
-      role: PropTypes.string,
+      firstName: PropTypes.string,
+      lastName: PropTypes.string,
+      email: PropTypes.string,
+      password: PropTypes.string,
+      birthDate: PropTypes.string,
+      phoneNumber: PropTypes.string,
+      type: PropTypes.string,
     }).isRequired,
     values: PropTypes.shape({
-      age: PropTypes.number,
-      isFullTime: PropTypes.bool,
-      joinDate: PropTypes.string,
-      name: PropTypes.string,
-      role: PropTypes.oneOf(['Development', 'Finance', 'Market']),
+      id: PropTypes.number,
+      firstName: PropTypes.string,
+      lastName: PropTypes.string,
+      email: PropTypes.string,
+      password: PropTypes.string,
+      birthDate: PropTypes.string,
+      phoneNumber: PropTypes.string,
+      type: PropTypes.string,
     }).isRequired,
   }).isRequired,
   onFieldChange: PropTypes.func.isRequired,

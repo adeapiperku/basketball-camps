@@ -12,6 +12,7 @@ const INITIAL_FORM_VALUES = {
   password: '',
   birthDate: '',
   phoneNumber: '',
+  type: '',
 };
 
 export default function CoachCreate() {
@@ -50,6 +51,7 @@ export default function CoachCreate() {
         if (!values.password) issues.push({ path: ['password'], message: 'Password is required' });
         if (!values.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
         if (!values.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
+        if (!values.type) issues.push({ path: ['type'], message: 'Type is required' });
         setFormErrors({
           ...formErrors,
           [name]: issues?.find((issue) => issue.path?.[0] === name)?.message,
@@ -76,6 +78,7 @@ export default function CoachCreate() {
     if (!formValues.password) issues.push({ path: ['password'], message: 'Password is required' });
     if (!formValues.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
     if (!formValues.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
+    if (!formValues.type) issues.push({ path: ['type'], message: 'Type is required' });
     if (issues && issues.length > 0) {
       setFormErrors(
         Object.fromEntries(issues.map((issue) => [issue.path?.[0], issue.message]))
@@ -93,6 +96,7 @@ export default function CoachCreate() {
         password: formValues.password,
         birthDate: formValues.birthDate || null,
         phoneNumber: formValues.phoneNumber || null,
+        type: formValues.type || '',
       };
       await service.create(payload);
       notifications.show('Coach created successfully.', {

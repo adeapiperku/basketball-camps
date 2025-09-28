@@ -153,6 +153,10 @@ export function validate(admin) {
     issues = [...issues, { message: 'Phone number is required', path: ['phoneNumber'] }];
   }
 
+  if (!admin.type) {
+    issues = [...issues, { message: 'Type is required', path: ['type'] }];
+  }
+
   if (!admin.password) {
     issues = [...issues, { message: 'Password is required', path: ['password'] }];
   }
