@@ -19,6 +19,7 @@ import {
 import DomainIcon from '@mui/icons-material/Domain';
 import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
 import PersonIcon from '@mui/icons-material/Person';
+import SportsBasketballIcon from '@mui/icons-material/SportsBasketball';
 
 function DashboardSidebar({
   expanded = true,
@@ -142,6 +143,13 @@ function DashboardSidebar({
               icon={<DomainIcon />}
               href="/schools"
               selected={!!matchPath('/schools/*', pathname) || pathname === '/'}
+            />
+            <DashboardSidebarPageItem
+              id="camps"
+              title="Camps"
+              icon={<SportsBasketballIcon />}
+              href="/camps"
+              selected={!!matchPath('/camps/*', pathname) || pathname === '/'}
             />           
           </List>
         </Box>
