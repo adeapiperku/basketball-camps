@@ -120,6 +120,7 @@ export default function AdminList() {
         email: a.email,
         phoneNumber: a.phoneNumber,
         birthDate: a.birthDate,
+        type: a.type,
       }));
       setRowsState({
         rows,
@@ -210,6 +211,7 @@ export default function AdminList() {
       { field: 'id', headerName: 'ID', width: 80 },
       { field: 'firstName', headerName: 'First name', width: 140 },
       { field: 'lastName', headerName: 'Last name', width: 140 },
+      { field: 'type', headerName: 'Type', width: 120 },
       { field: 'email', headerName: 'Email', width: 220 },
       { field: 'phoneNumber', headerName: 'Phone Number', width: 160 },
       {

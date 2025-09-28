@@ -18,6 +18,7 @@ import {
 } from '../mixins';
 import DomainIcon from '@mui/icons-material/Domain';
 import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
+import PersonIcon from '@mui/icons-material/Person';
 
 function DashboardSidebar({
   expanded = true,
@@ -127,6 +128,13 @@ function DashboardSidebar({
               icon={<Person2OutlinedIcon />}
               href="/participants"
               selected={!!matchPath('/participants/*', pathname) || pathname === '/'}
+            />
+            <DashboardSidebarPageItem
+              id="coaches"
+              title="Coaches"
+              icon={<PersonIcon/>}
+              href="/coaches"
+              selected={!!matchPath('/coaches/*', pathname) || pathname === '/'}
             />
             <DashboardSidebarPageItem
               id="schools"

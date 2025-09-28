@@ -123,6 +123,7 @@ export default function ParticipantList() {
         birthDate: a.birthDate,
         jerseySize: a.jerseySize,
         medicalNotes: a.medicalNotes,
+        type: a.type,
       }));
       setRowsState({
         rows,
@@ -213,6 +214,7 @@ export default function ParticipantList() {
       { field: 'id', headerName: 'ID', width: 80 },
       { field: 'firstName', headerName: 'First name', width: 140 },
       { field: 'lastName', headerName: 'Last name', width: 140 },
+      { field: 'type', headerName: 'Type', width: 120 },
       { field: 'email', headerName: 'Email', width: 200 },
       { field: 'phoneNumber', headerName: 'Phone', width: 140 },
       { field: 'emergencyContactPhone', headerName: 'Emergency contact', width: 180 },
