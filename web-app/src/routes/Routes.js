@@ -20,6 +20,10 @@ import CoachList from "../page/admin/coaches/CoachList";
 import CoachCreate from "../page/admin/coaches/CoachCreate";
 import CoachShow from "../page/admin/coaches/CoachShow";
 import CoachEdit from "../page/admin/coaches/CoachEdit";
+import CampList from "../page/admin/camps/CampList";
+import CampCreate from "../page/admin/camps/CampCreate";
+import CampShow from "../page/admin/camps/CampShow";
+import CampEdit from "../page/admin/camps/CampEdit";
 
 const AppRoutes = [
   // Redirect root to /home
@@ -61,7 +65,12 @@ const AppRoutes = [
       <Route path="coaches/new" element={<CoachCreate />} />
       <Route path="coaches/:coachId" element={<CoachShow />} />
       <Route path="coaches/:coachId/edit" element={<CoachEdit />} />
-      
+      {/* Camps routes */}
+      <Route path="camps" element={<CampList />} />
+      <Route path="camps/new" element={<CampCreate />} />
+      <Route path="camps/:campId" element={<CampShow />} />
+      <Route path="camps/:campId/edit" element={<CampEdit />} />
+
     </Route>
   ),
 ];
