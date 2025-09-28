@@ -14,7 +14,7 @@ public class Participant extends UserAccount {
     @Transient
     private String type = "Participant";
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "school_id")
     private School school;
 

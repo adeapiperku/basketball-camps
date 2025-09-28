@@ -17,6 +17,7 @@ import {
   getDrawerWidthTransitionMixin,
 } from '../mixins';
 import DomainIcon from '@mui/icons-material/Domain';
+import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
 
 function DashboardSidebar({
   expanded = true,
@@ -119,7 +120,14 @@ function DashboardSidebar({
               icon={<AdminPanelSettingsIcon />}
               href="/admins"
               selected={!!matchPath('/admins/*', pathname) || pathname === '/'}
-            /> 
+            />
+            <DashboardSidebarPageItem
+              id="participants"
+              title="Participants"
+              icon={<Person2OutlinedIcon />}
+              href="/participants"
+              selected={!!matchPath('/participants/*', pathname) || pathname === '/'}
+            />
             <DashboardSidebarPageItem
               id="schools"
               title="Schools"
