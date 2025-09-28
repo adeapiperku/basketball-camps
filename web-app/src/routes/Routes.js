@@ -2,7 +2,7 @@ import { Navigate, Route } from "react-router-dom";
 import DashboardLayout from "../components/DashboardLayout";
 import Home from "../page/home/Home";
 import SignIn from "../page/home/SignIn";
-// import SignUp from "../page/home/SignUp";
+import SignUp from "../page/home/SignUp";
 import PrivateRoute from "./PrivateRoute";
 import AdminList from "../page/admin/admins/AdminList";
 import AdminShow from "../page/admin/admins/AdminShow";
@@ -34,7 +34,7 @@ const AppRoutes = [
 
   // Auth routes
   <Route key="sign-in" path="/sign-in" element={<SignIn />} />,
-  // <Route key="sign-up" path="/sign-up" element={<SignUp />} />,
+  <Route key="sign-up" path="/sign-up" element={<SignUp />} />,
 
   (
     <Route
