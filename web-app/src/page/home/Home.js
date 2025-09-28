@@ -32,7 +32,7 @@ export default function Home() {
           >
             Sign In
           </Button>
-          {/* <Button
+          <Button
             variant="contained"
             size="large"
             color="secondary"
@@ -40,7 +40,7 @@ export default function Home() {
             to="/sign-up"
           >
             Sign Up
-          </Button> */}
+          </Button>
         </Box>
       </Box>
     </Container>
