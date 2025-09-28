@@ -12,6 +12,10 @@ import SchoolList from "../page/admin/schools/SchoolList";
 import SchoolCreate from "../page/admin/schools/SchoolCreate";
 import SchoolEdit from "../page/admin/schools/SchoolEdit";
 import SchoolShow from "../page/admin/schools/SchoolShow";
+import ParticipantList from "../page/admin/participants/ParticipantList";
+import ParticipantCreate from "../page/admin/participants/ParticipantCreate";
+import ParticipantShow from "../page/admin/participants/ParticipantShow";
+import ParticipantEdit from "../page/admin/participants/ParticipantEdit";
 
 const AppRoutes = [
   // Redirect root to /home
@@ -43,6 +47,12 @@ const AppRoutes = [
       <Route path="schools/new" element={<SchoolCreate />} />
       <Route path="schools/:schoolId" element={<SchoolShow />} />
       <Route path="schools/:schoolId/edit" element={<SchoolEdit />} />
+      {/* Participants routes */}
+      <Route path="participants" element={<ParticipantList />} />
+      <Route path="participants/new" element={<ParticipantCreate />} />
+      <Route path="participants/:participantId" element={<ParticipantShow />} />
+      <Route path="participants/:participantId/edit" element={<ParticipantEdit />} />
+
     </Route>
   ),
 ];
