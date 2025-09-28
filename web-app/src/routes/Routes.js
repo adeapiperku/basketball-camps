@@ -16,6 +16,10 @@ import ParticipantList from "../page/admin/participants/ParticipantList";
 import ParticipantCreate from "../page/admin/participants/ParticipantCreate";
 import ParticipantShow from "../page/admin/participants/ParticipantShow";
 import ParticipantEdit from "../page/admin/participants/ParticipantEdit";
+import CoachList from "../page/admin/coaches/CoachList";
+import CoachCreate from "../page/admin/coaches/CoachCreate";
+import CoachShow from "../page/admin/coaches/CoachShow";
+import CoachEdit from "../page/admin/coaches/CoachEdit";
 
 const AppRoutes = [
   // Redirect root to /home
@@ -52,6 +56,11 @@ const AppRoutes = [
       <Route path="participants/new" element={<ParticipantCreate />} />
       <Route path="participants/:participantId" element={<ParticipantShow />} />
       <Route path="participants/:participantId/edit" element={<ParticipantEdit />} />
+      {/* Coaches routes */}
+      <Route path="coaches" element={<CoachList />} />
+      <Route path="coaches/new" element={<CoachCreate />} />
+      <Route path="coaches/:coachId" element={<CoachShow />} />
+      <Route path="coaches/:coachId/edit" element={<CoachEdit />} />
 
     </Route>
   ),
