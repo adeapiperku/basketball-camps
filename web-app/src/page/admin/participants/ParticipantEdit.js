@@ -43,6 +43,7 @@ function ParticipantEditForm({ initialValues, onSubmit }) {
         if (!values.firstName) issues.push({ path: ['firstName'], message: 'First name is required' });
         if (!values.lastName) issues.push({ path: ['lastName'], message: 'Last name is required' });
         if (!values.email) issues.push({ path: ['email'], message: 'Email is required' });
+        if (!values.password) issues.push({ path: ['password'], message: 'Password is required' });
         if (!values.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
         if (!values.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
         if (!values.type) issues.push({ path: ['type'], message: 'Type is required' });
@@ -69,6 +70,7 @@ function ParticipantEditForm({ initialValues, onSubmit }) {
     if (!formValues.firstName) issues.push({ path: ['firstName'], message: 'First name is required' });
     if (!formValues.lastName) issues.push({ path: ['lastName'], message: 'Last name is required' });
     if (!formValues.email) issues.push({ path: ['email'], message: 'Email is required' });
+    if (!formValues.password) issues.push({ path: ['password'], message: 'Password is required' });
     if (!formValues.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
     if (!formValues.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
     if (!formValues.type) issues.push({ path: ['type'], message: 'Type is required' });
@@ -115,10 +117,9 @@ ParticipantEditForm.propTypes = {
     firstName: PropTypes.string,
     lastName: PropTypes.string,
     email: PropTypes.string,
+    password: PropTypes.string,
     phoneNumber: PropTypes.string,
     emergencyContactPhone: PropTypes.string,
-    jerseySize: PropTypes.string,
-    medicalNotes: PropTypes.string,
     schoolId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     birthDate: PropTypes.string,
   }).isRequired,
@@ -157,10 +158,9 @@ export default function ParticipantEdit() {
         firstName: showData.firstName ?? '',
         lastName: showData.lastName ?? '',
         email: showData.email ?? '',
+        password: showData.password ?? '',
         phoneNumber: showData.phoneNumber ?? '',
         emergencyContactPhone: showData.emergencyContactPhone ?? '',
-        jerseySize: showData.jerseySize ?? '',
-        medicalNotes: showData.medicalNotes ?? '',
         schoolId: showData.school?.id ?? '',
         birthDate,
         type: showData.type ?? '',
@@ -183,11 +183,10 @@ export default function ParticipantEdit() {
         firstName: formValues.firstName,
         lastName: formValues.lastName,
         email: formValues.email,
+        password: formValues.password,
         birthDate: formValues.birthDate || null,
         phoneNumber: formValues.phoneNumber || null,
         emergencyContactPhone: formValues.emergencyContactPhone || null,
-        jerseySize: formValues.jerseySize || null,
-        medicalNotes: formValues.medicalNotes || null,
         school: formValues.schoolId ? { id: Number(formValues.schoolId) } : null,
         type: formValues.type || '',
       };

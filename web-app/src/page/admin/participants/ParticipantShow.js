@@ -14,8 +14,9 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate, useParams } from 'react-router';
 import { useDialogs } from '../../../hooks/useDialogs/useDialogs';
 import useNotifications from '../../../hooks/useNotifications/useNotifications';
-import PageContainer from '../../../components/PageContainer';
 import { ParticipantService } from '../../../service/ParticipantService';
+import PageContainer from '../../../components/PageContainer';
+import { formatDate } from '../../../utils/dateUtils';
 
 export default function ParticipantShow() {
   const { participantId } = useParams();
@@ -124,7 +125,7 @@ export default function ParticipantShow() {
     return participant ? (
       <Box sx={{ flexGrow: 1, width: '100%' }}>
         <Grid container spacing={2} sx={{ width: '100%' }}>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Paper sx={{ px: 2, py: 1 }}>
               <Typography variant="overline">First name</Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
@@ -132,7 +133,7 @@ export default function ParticipantShow() {
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Paper sx={{ px: 2, py: 1 }}>
               <Typography variant="overline">Last name</Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
@@ -140,7 +141,7 @@ export default function ParticipantShow() {
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Paper sx={{ px: 2, py: 1 }}>
               <Typography variant="overline">Email</Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
@@ -148,51 +149,43 @@ export default function ParticipantShow() {
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Paper sx={{ px: 2, py: 1 }}>
-              <Typography variant="overline">Phone</Typography>
+              <Typography variant="overline">Password</Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                {"•••••"}
+              </Typography>
+            </Paper>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Paper sx={{ px: 2, py: 1 }}>
+              <Typography variant="overline">Birth date</Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                  {formatDate(participant.birthDate)}
+              </Typography>
+            </Paper>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Paper sx={{ px: 2, py: 1 }}>
+              <Typography variant="overline">Phone number</Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
                 {participant.phoneNumber}
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Paper sx={{ px: 2, py: 1 }}>
-              <Typography variant="overline">Emergency contact phone</Typography>
+              <Typography variant="overline">Emergency Contact Phone</Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
                 {participant.emergencyContactPhone}
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Paper sx={{ px: 2, py: 1 }}>
-              <Typography variant="overline">Birth date</Typography>
+              <Typography variant="overline">Type</Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                {participant.birthDate}
-              </Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Paper sx={{ px: 2, py: 1 }}>
-              <Typography variant="overline">Jersey size</Typography>
-              <Typography variant="body1" sx={{ mb: 1 }}>
-                {participant.jerseySize}
-              </Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Paper sx={{ px: 2, py: 1 }}>
-              <Typography variant="overline">School</Typography>
-              <Typography variant="body1" sx={{ mb: 1 }}>
-                {participant.school?.name ?? ''}
-              </Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs={12}>
-            <Paper sx={{ px: 2, py: 1 }}>
-              <Typography variant="overline">Medical notes</Typography>
-              <Typography variant="body1" sx={{ mb: 1, whiteSpace: 'pre-wrap' }}>
-                {participant.medicalNotes}
+                {participant.type}
               </Typography>
             </Paper>
           </Grid>

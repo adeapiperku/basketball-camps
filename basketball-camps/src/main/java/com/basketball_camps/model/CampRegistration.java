@@ -39,6 +39,9 @@ public class CampRegistration extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String specialRequests;
 
+    // @Enumerated(EnumType.STRING)
+    // private JerseySize jerseySize;
+
     public boolean isConfirmed() {
         return status == RegistrationStatus.CONFIRMED;
     }

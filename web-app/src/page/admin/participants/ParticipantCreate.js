@@ -13,61 +13,51 @@ const INITIAL_FORM_VALUES = {
   birthDate: '',
   phoneNumber: '',
   emergencyContactPhone: '',
-  jerseySize: '',
   schoolId: '',
-  medicalNotes: '',
-  type: '',
+  type: 'Participant', // default type
 };
 
 export default function ParticipantCreate() {
   const navigate = useNavigate();
-
   const notifications = useNotifications();
 
-  const [formState, setFormState] = React.useState(() => ({
+  const [formState, setFormState] = React.useState({
     values: INITIAL_FORM_VALUES,
     errors: {},
-  }));
+  });
+
   const formValues = formState.values;
   const formErrors = formState.errors;
 
-  const setFormValues = React.useCallback((newFormValues) => {
-    setFormState((previousState) => ({
-      ...previousState,
-      values: newFormValues,
-    }));
+  const setFormValues = React.useCallback((newValues) => {
+    setFormState((prev) => ({ ...prev, values: newValues }));
   }, []);
 
-  const setFormErrors = React.useCallback((newFormErrors) => {
-    setFormState((previousState) => ({
-      ...previousState,
-      errors: newFormErrors,
-    }));
+  const setFormErrors = React.useCallback((newErrors) => {
+    setFormState((prev) => ({ ...prev, errors: newErrors }));
   }, []);
 
   const handleFormFieldChange = React.useCallback(
     (name, value) => {
-      const validateField = async (values) => {
-        const issues = [];
-        if (!values.firstName) issues.push({ path: ['firstName'], message: 'First name is required' });
-        if (!values.lastName) issues.push({ path: ['lastName'], message: 'Last name is required' });
-        if (!values.email) issues.push({ path: ['email'], message: 'Email is required' });
-        if (!values.password) issues.push({ path: ['password'], message: 'Password is required' });
-        if (!values.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
-        if (!values.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
-        if (!values.type) issues.push({ path: ['type'], message: 'Type is required' });
-        setFormErrors({
-          ...formErrors,
-          [name]: issues?.find((issue) => issue.path?.[0] === name)?.message,
-        });
-      };
-
       const newFormValues = { ...formValues, [name]: value };
-
       setFormValues(newFormValues);
-      validateField(newFormValues);
+
+      // simple validation
+      const issues = [];
+      if (!newFormValues.firstName) issues.push({ path: ['firstName'], message: 'First name is required' });
+      if (!newFormValues.lastName) issues.push({ path: ['lastName'], message: 'Last name is required' });
+      if (!newFormValues.email) issues.push({ path: ['email'], message: 'Email is required' });
+      if (!newFormValues.password) issues.push({ path: ['password'], message: 'Password is required' });
+      if (!newFormValues.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
+      if (!newFormValues.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
+      if (!newFormValues.type) issues.push({ path: ['type'], message: 'Type is required' });
+
+      setFormErrors({
+        ...formErrors,
+        [name]: issues.find((issue) => issue.path?.[0] === name)?.message,
+      });
     },
-    [formValues, formErrors, setFormErrors, setFormValues],
+    [formValues, formErrors, setFormValues, setFormErrors]
   );
 
   const handleFormReset = React.useCallback(() => {
@@ -83,10 +73,9 @@ export default function ParticipantCreate() {
     if (!formValues.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
     if (!formValues.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
     if (!formValues.type) issues.push({ path: ['type'], message: 'Type is required' });
-    if (issues && issues.length > 0) {
-      setFormErrors(
-        Object.fromEntries(issues.map((issue) => [issue.path?.[0], issue.message])),
-      );
+
+    if (issues.length > 0) {
+      setFormErrors(Object.fromEntries(issues.map((i) => [i.path?.[0], i.message])));
       return;
     }
     setFormErrors({});
@@ -101,27 +90,16 @@ export default function ParticipantCreate() {
         birthDate: formValues.birthDate || null,
         phoneNumber: formValues.phoneNumber || null,
         emergencyContactPhone: formValues.emergencyContactPhone || null,
-        jerseySize: formValues.jerseySize || null,
-        medicalNotes: formValues.medicalNotes || null,
         school: formValues.schoolId ? { id: Number(formValues.schoolId) } : null,
-        type: formValues.type || '',
+        type: formValues.type,
       };
       await service.create(payload);
-      notifications.show('Participant created successfully.', {
-        severity: 'success',
-        autoHideDuration: 3000,
-      });
 
+      notifications.show('Participant created successfully.', { severity: 'success', autoHideDuration: 3000 });
       navigate('/participants');
-    } catch (createError) {
-      notifications.show(
-        `Failed to create participants. Reason: ${createError.message}`,
-        {
-          severity: 'error',
-          autoHideDuration: 3000,
-        },
-      );
-      throw createError;
+    } catch (error) {
+      notifications.show(`Failed to create participant. Reason: ${error.message}`, { severity: 'error', autoHideDuration: 3000 });
+      throw error;
     }
   }, [formValues, navigate, notifications, setFormErrors]);
 

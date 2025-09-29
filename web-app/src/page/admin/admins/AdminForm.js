@@ -137,7 +137,7 @@ function AdminForm(props) {
               name="password"
               label={formValues.id ? 'New Password (leave blank to keep current)' : 'Password'}
               error={!!formErrors.password}
-              helperText={formErrors.password || (formValues.id ? ' ' : 'Enter a password')}
+              helperText={formErrors.password || (formValues.id ? ' ' : '')}
               fullWidth
             />
           </Grid>

@@ -8,12 +8,6 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import Typography from '@mui/material/Typography';
-import { SchoolService } from '../../../service/SchoolService';
 
 function ParticipantForm(props) {
   const {
@@ -31,23 +25,6 @@ function ParticipantForm(props) {
   const navigate = useNavigate();
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [schools, setSchools] = React.useState([]);
-
-  const isEdit = Boolean(formValues?.id);
-
-  React.useEffect(() => {
-    const loadSchools = async () => {
-      try {
-        const service = new SchoolService();
-        const list = await service.findAll();
-        setSchools(Array.isArray(list) ? list : list?.items ?? []);
-      } catch (e) {
-        // silently ignore for now; school select will be empty
-        setSchools([]);
-      }
-    };
-    loadSchools();
-  }, []);
 
   const handleSubmit = React.useCallback(
     async (event) => {
@@ -70,9 +47,25 @@ function ParticipantForm(props) {
     [onFieldChange],
   );
 
-  const handleSelectChange = React.useCallback(
+  const handleDateFieldChange = React.useCallback(
     (event) => {
-      onFieldChange(event.target.name, event.target.value);
+      const { name, value } = event.target;
+      if (value) {
+        try {
+          const date = new Date(value);
+          if (isNaN(date.getTime())) {
+            onFieldChange(name, null);
+          } else {
+            const iso = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
+            onFieldChange(name, iso);
+          }
+        } catch (error) {
+          console.error('Error parsing date:', error);
+          onFieldChange(name, null);
+        }
+      } else {
+        onFieldChange(name, null);
+      }
     },
     [onFieldChange],
   );
@@ -98,7 +91,7 @@ function ParticipantForm(props) {
     >
       <FormGroup>
         <Grid container spacing={2} sx={{ mb: 2, width: '100%' }}>
-          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
             <TextField
               value={formValues.firstName ?? ''}
               onChange={handleTextFieldChange}
@@ -109,7 +102,7 @@ function ParticipantForm(props) {
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
             <TextField
               value={formValues.lastName ?? ''}
               onChange={handleTextFieldChange}
@@ -120,20 +113,7 @@ function ParticipantForm(props) {
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
-            <TextField
-              type="date"
-              value={formValues.birthDate ?? ''}
-              onChange={handleTextFieldChange}
-              name="birthDate"
-              label="Birth date"
-              error={!!formErrors.birthDate}
-              helperText={formErrors.birthDate ?? ' '}
-              fullWidth
-              InputLabelProps={{ shrink: true }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
             <TextField
               value={formValues.email ?? ''}
               onChange={handleTextFieldChange}
@@ -144,21 +124,32 @@ function ParticipantForm(props) {
               fullWidth
             />
           </Grid>
-          {!isEdit && (
-            <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
-              <TextField
-                type="password"
-                value={formValues.password ?? ''}
-                onChange={handleTextFieldChange}
-                name="password"
-                label="Password"
-                error={!!formErrors.password}
-                helperText={formErrors.password ?? ' '}
-                fullWidth
-              />
-            </Grid>
-          )}
-          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
+            <TextField
+              type="password"
+              value={formValues.password ?? ''}
+              onChange={handleTextFieldChange}
+              name="password"
+              label={formValues.id ? 'New Password (leave blank to keep current)' : 'Password'}
+              error={!!formErrors.password}
+              helperText={formErrors.password || (formValues.id ? ' ':"")}
+              fullWidth
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
+            <TextField
+              type="date"
+              name="birthDate"
+              label="Birth date"
+              value={formValues.birthDate ? new Date(formValues.birthDate).toISOString().slice(0, 10) : ''}
+              onChange={handleDateFieldChange}
+              error={!!formErrors.birthDate}
+              helperText={formErrors.birthDate ?? ' '}
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
             <TextField
               value={formValues.phoneNumber ?? ''}
               onChange={handleTextFieldChange}
@@ -169,10 +160,22 @@ function ParticipantForm(props) {
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
+            <TextField
+              value={formValues.emergencyContactPhone ?? ''}
+              onChange={handleTextFieldChange}
+              name="emergencyContactPhone"
+              label="Emergency Contact Phone"
+              error={!!formErrors.emergencyContactPhone}
+              helperText={formErrors.emergencyContactPhone ?? ' '}
+              fullWidth
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
             <TextField
               value={formValues.type ?? ''}
-              onChange={handleTextFieldChange}
+              disabled
+              // onChange={handleTextFieldChange}
               name="type"
               label="Type"
               placeholder="e.g., Participant"
@@ -180,74 +183,7 @@ function ParticipantForm(props) {
               helperText={formErrors.type ?? ' '}
               fullWidth
             />
-          </Grid>
-          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
-            <TextField
-              value={formValues.emergencyContactPhone ?? ''}
-              onChange={handleTextFieldChange}
-              name="emergencyContactPhone"
-              label="Emergency contact phone"
-              error={!!formErrors.emergencyContactPhone}
-              helperText={formErrors.emergencyContactPhone ?? ' '}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
-            <FormControl fullWidth>
-              <InputLabel id="jersey-size-label">Jersey size</InputLabel>
-              <Select
-                labelId="jersey-size-label"
-                value={formValues.jerseySize ?? ''}
-                onChange={handleSelectChange}
-                name="jerseySize"
-                label="Jersey size"
-                error={!!formErrors.jerseySize}
-              >
-                {['XS', 'S', 'M', 'L', 'XL', 'XXL'].map((opt) => (
-                  <MenuItem key={opt} value={opt}>
-                    {opt}
-                  </MenuItem>
-                ))}
-              </Select>
-              <Typography variant="caption" color={formErrors.jerseySize ? 'error' : 'text.secondary'}>
-                {formErrors.jerseySize ?? ' '}
-              </Typography>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
-            <FormControl fullWidth>
-              <InputLabel id="school-label">School</InputLabel>
-              <Select
-                labelId="school-label"
-                value={formValues.schoolId ?? ''}
-                onChange={handleSelectChange}
-                name="schoolId"
-                label="School"
-              >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                {schools.map((s) => (
-                  <MenuItem key={s.id} value={s.id}>
-                    {s.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sx={{ display: 'flex' }}>
-            <TextField
-              value={formValues.medicalNotes ?? ''}
-              onChange={handleTextFieldChange}
-              name="medicalNotes"
-              label="Medical notes"
-              error={!!formErrors.medicalNotes}
-              helperText={formErrors.medicalNotes ?? ' '}
-              fullWidth
-              multiline
-              minRows={3}
-            />
-          </Grid>
+          </Grid>          
         </Grid>
       </FormGroup>
       <Stack direction="row" spacing={2} justifyContent="space-between">
@@ -282,9 +218,6 @@ ParticipantForm.propTypes = {
       birthDate: PropTypes.string,
       phoneNumber: PropTypes.string,
       emergencyContactPhone: PropTypes.string,
-      jerseySize: PropTypes.string,
-      medicalNotes: PropTypes.string,
-      schoolId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       type: PropTypes.string,
     }).isRequired,
     values: PropTypes.shape({
@@ -296,9 +229,6 @@ ParticipantForm.propTypes = {
       birthDate: PropTypes.string,
       phoneNumber: PropTypes.string,
       emergencyContactPhone: PropTypes.string,
-      jerseySize: PropTypes.string,
-      medicalNotes: PropTypes.string,
-      schoolId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       type: PropTypes.string,
     }).isRequired,
   }).isRequired,

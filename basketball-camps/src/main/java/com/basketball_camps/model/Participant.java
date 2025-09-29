@@ -1,7 +1,5 @@
 package com.basketball_camps.model;
 
-import com.basketball_camps.enums.JerseySize;
-
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,11 +18,5 @@ public class Participant extends UserAccount {
 
     @Column
     private String emergencyContactPhone;
-
-    @Column(columnDefinition = "TEXT")
-    private String medicalNotes;
-
-    @Enumerated(EnumType.STRING)
-    private JerseySize jerseySize;
 
 }

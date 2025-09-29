@@ -120,9 +120,8 @@ export default function ParticipantList() {
         email: a.email,
         phoneNumber: a.phoneNumber,
         emergencyContactPhone: a.emergencyContactPhone,
+        school: a.school?.name,
         birthDate: a.birthDate,
-        jerseySize: a.jerseySize,
-        medicalNotes: a.medicalNotes,
         type: a.type,
       }));
       setRowsState({
@@ -215,11 +214,17 @@ export default function ParticipantList() {
       { field: 'firstName', headerName: 'First name', width: 140 },
       { field: 'lastName', headerName: 'Last name', width: 140 },
       { field: 'type', headerName: 'Type', width: 120 },
-      { field: 'email', headerName: 'Email', width: 200 },
-      { field: 'phoneNumber', headerName: 'Phone', width: 140 },
-      { field: 'emergencyContactPhone', headerName: 'Emergency contact', width: 180 },
-      { field: 'jerseySize', headerName: 'Jersey size', width: 120 },
-      { field: 'medicalNotes', headerName: 'Medical notes', flex: 1, minWidth: 200 },
+      { field: 'email', headerName: 'Email', width: 140 },
+      { field: 'school', headerName: 'School', width: 100 },
+      {
+        field: 'birthDate',
+        headerName: 'Birth date',
+        type: 'date',
+        valueGetter: (value) => value && new Date(value),
+        width: 160,
+      },      
+      { field: 'phoneNumber', headerName: 'Phone', width: 100 },
+      { field: 'emergencyContactPhone', headerName: 'Emergency contact', width: 120 },
       {
         field: 'actions',
         type: 'actions',
