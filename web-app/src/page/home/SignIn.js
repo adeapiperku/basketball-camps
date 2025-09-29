@@ -6,8 +6,7 @@ import Divider from '@mui/material/Divider';
 import FormLabel from '@mui/material/FormLabel';
 import FormControl from '@mui/material/FormControl';
 import Link from '@mui/material/Link';
-import { Link as RouterLink } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -58,7 +57,7 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
   },
 }));
 
-export default function SignIn(props) {
+export default function SignIn() {
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
@@ -68,19 +67,21 @@ export default function SignIn(props) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Run validation here to avoid relying on button onClick
     const ok = validateInputs();
     if (!ok) return;
+
     const data = new FormData(event.currentTarget);
     const email = data.get('email');
     const password = data.get('password');
     let role = user?.role || 'participant';
-    // Simple demo logic: treat this credential as admin
+
+    // Simple demo logic for admin
     if (email === 'admin@gmail.com' && password === 'admin') {
       role = 'admin';
     }
-    // Simulate sign-in success: set auth context and navigate
+
     login({ email, role });
+
     if (role === 'admin') {
       navigate('/admins', { replace: true });
     } else {
@@ -124,10 +125,17 @@ export default function SignIn(props) {
             <Typography
               component="h1"
               variant="h4"
-              sx={{ width: '100%', textAlign: 'center', fontSize: 'clamp(2rem, 6vw, 2.15rem)' }}
+              sx={{
+                width: '100%',
+                textAlign: 'center',
+                fontSize: 'clamp(2rem, 6vw, 2.15rem)',
+                color: 'primary.main',
+                fontWeight: 'bold',
+              }}
             >
               Sign in
             </Typography>
+
             <Box
               component="form"
               onSubmit={handleSubmit}
@@ -153,9 +161,15 @@ export default function SignIn(props) {
                   required
                   fullWidth
                   variant="outlined"
+                  sx={{
+                    '& .MuiOutlinedInput-root.Mui-focused': {
+                      '& fieldset': { borderColor: 'primary.main' },
+                    },
+                  }}
                   color={emailError ? 'error' : 'primary'}
                 />
               </FormControl>
+
               <FormControl>
                 <FormLabel htmlFor="password">Password</FormLabel>
                 <TextField
@@ -166,22 +180,34 @@ export default function SignIn(props) {
                   type="password"
                   id="password"
                   autoComplete="current-password"
-                  autoFocus
                   required
                   fullWidth
                   variant="outlined"
+                  sx={{
+                    '& .MuiOutlinedInput-root.Mui-focused': {
+                      '& fieldset': { borderColor: 'primary.main' },
+                    },
+                  }}
                   color={passwordError ? 'error' : 'primary'}
                 />
               </FormControl>
+
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
+                sx={{
+                  backgroundColor: 'primary.main',
+                  color: 'white',
+                  '&:hover': { backgroundColor: 'primary.dark' },
+                }}
               >
                 Sign in
               </Button>
             </Box>
-            <Divider>or</Divider>
+
+            <Divider sx={{ my: 2 }}>or</Divider>
+
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Typography sx={{ textAlign: 'center' }}>
                 Don't have an account?{' '}
@@ -189,7 +215,7 @@ export default function SignIn(props) {
                   component={RouterLink}
                   to="/sign-up"
                   variant="body2"
-                  sx={{ alignSelf: 'center' }}
+                  sx={{ color: 'primary.main', fontWeight: 'bold' }}
                 >
                   Sign up
                 </Link>
