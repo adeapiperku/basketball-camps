@@ -120,6 +120,29 @@ function AdminForm(props) {
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
             <TextField
+              value={formValues.email ?? ''}
+              onChange={handleTextFieldChange}
+              name="email"
+              label="Email"
+              error={!!formErrors.email}
+              helperText={formErrors.email ?? ' '}
+              fullWidth
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
+            <TextField
+              type="password"
+              value={formValues.password ?? ''}
+              onChange={handleTextFieldChange}
+              name="password"
+              label={formValues.id ? 'New Password (leave blank to keep current)' : 'Password'}
+              error={!!formErrors.password}
+              helperText={formErrors.password || (formValues.id ? ' ' : 'Enter a password')}
+              fullWidth
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
+            <TextField
               type="date"
               name="birthDate"
               label="Birth date"
@@ -129,17 +152,6 @@ function AdminForm(props) {
               helperText={formErrors.birthDate ?? ' '}
               fullWidth
               InputLabelProps={{ shrink: true }}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
-            <TextField
-              value={formValues.email ?? ''}
-              onChange={handleTextFieldChange}
-              name="email"
-              label="Email"
-              error={!!formErrors.email}
-              helperText={formErrors.email ?? ' '}
-              fullWidth
             />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
@@ -156,30 +168,16 @@ function AdminForm(props) {
           <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
             <TextField
               value={formValues.type ?? ''}
-              onChange={handleTextFieldChange}
+              disabled
+              // onChange={handleTextFieldChange}
               name="type"
               label="Type"
-              placeholder="e.g., Super, Manager"
+              placeholder="e.g., Admin"
               error={!!formErrors.type}
               helperText={formErrors.type ?? ' '}
               fullWidth
             />
-          </Grid>
-          {Boolean(!formValues.id) && (
-            <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
-              <TextField
-                type="password"
-                value={formValues.password ?? ''}
-                onChange={handleTextFieldChange}
-                name="password"
-                label="Password"
-                error={!!formErrors.password}
-                helperText={formErrors.password ?? ' '}
-                fullWidth
-              />
-            </Grid>
-          )}
-          
+          </Grid>          
         </Grid>
       </FormGroup>
       <Stack direction="row" spacing={2} justifyContent="space-between">

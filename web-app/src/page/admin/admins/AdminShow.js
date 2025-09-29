@@ -16,6 +16,7 @@ import { useDialogs } from '../../../hooks/useDialogs/useDialogs';
 import useNotifications from '../../../hooks/useNotifications/useNotifications';
 import { AdminService } from '../../../service/AdminService';
 import PageContainer from '../../../components/PageContainer';
+import { formatDate } from '../../../utils/dateUtils';
 
 export default function AdminShow() {
   const { adminId } = useParams();
@@ -142,21 +143,25 @@ export default function AdminShow() {
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Paper sx={{ px: 2, py: 1 }}>
-              <Typography variant="overline">Birth date</Typography>
+              <Typography variant="overline">Email</Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                {new Date(admin.joinDate).toLocaleDateString(undefined, {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
+                {admin.email}
               </Typography>
             </Paper>
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Paper sx={{ px: 2, py: 1 }}>
-              <Typography variant="overline">Email</Typography>
+              <Typography variant="overline">Password</Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                {admin.email}
+                {"•••••"}
+              </Typography>
+            </Paper>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Paper sx={{ px: 2, py: 1 }}>
+              <Typography variant="overline">Birth date</Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                  {formatDate(admin.birthDate)}
               </Typography>
             </Paper>
           </Grid>

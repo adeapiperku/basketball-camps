@@ -43,6 +43,7 @@ function AdminEditForm({ initialValues, onSubmit }) {
         if (!values.firstName) issues.push({ path: ['firstName'], message: 'First name is required' });
         if (!values.lastName) issues.push({ path: ['lastName'], message: 'Last name is required' });
         if (!values.email) issues.push({ path: ['email'], message: 'Email is required' });
+        if (!values.password) issues.push({ path: ['password'], message: 'Password is required' });
         if (!values.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
         if (!values.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
         setFormErrors({
@@ -68,6 +69,7 @@ function AdminEditForm({ initialValues, onSubmit }) {
       if (!formValues.firstName) issues.push({ path: ['firstName'], message: 'First name is required' });
       if (!formValues.lastName) issues.push({ path: ['lastName'], message: 'Last name is required' });
       if (!formValues.email) issues.push({ path: ['email'], message: 'Email is required' });
+      if (!formValues.password) issues.push({ path: ['password'], message: 'Password is required' });
       if (!formValues.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
       if (!formValues.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
     if (issues && issues.length > 0) {
@@ -113,6 +115,7 @@ AdminEditForm.propTypes = {
     firstName: PropTypes.string,
     lastName: PropTypes.string,
     email: PropTypes.string,
+    password: PropTypes.string,
     phoneNumber: PropTypes.string,
     birthDate: PropTypes.string,
   }).isRequired,

@@ -121,6 +121,8 @@ export default function AdminList() {
         phoneNumber: a.phoneNumber,
         birthDate: a.birthDate,
         type: a.type,
+        createdOn: a.createdOn,
+        updatedOn: a.updatedOn,  
       }));
       setRowsState({
         rows,
