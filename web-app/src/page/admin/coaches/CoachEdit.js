@@ -8,17 +8,18 @@ import useNotifications from '../../../hooks/useNotifications/useNotifications';
 import { CoachService } from '../../../service/CoachService';
 import CoachForm from './CoachForm';
 import PageContainer from '../../../components/PageContainer';
+import useCamps from '../../../hooks/useCamps';
 
-function CoachEditForm({ initialValues, onSubmit }) {
+function CoachEditForm({ initialValues, onSubmit, camps }) {
   const { coachId } = useParams();
   const navigate = useNavigate();
-
   const notifications = useNotifications();
 
   const [formState, setFormState] = React.useState(() => ({
     values: initialValues,
     errors: {},
   }));
+
   const formValues = formState.values;
   const formErrors = formState.errors;
 
@@ -43,9 +44,9 @@ function CoachEditForm({ initialValues, onSubmit }) {
         if (!values.firstName) issues.push({ path: ['firstName'], message: 'First name is required' });
         if (!values.lastName) issues.push({ path: ['lastName'], message: 'Last name is required' });
         if (!values.email) issues.push({ path: ['email'], message: 'Email is required' });
+        if (!values.password) issues.push({ path: ['password'], message: 'Password is required' });
         if (!values.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
         if (!values.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
-        if (!values.type) issues.push({ path: ['type'], message: 'Type is required' });
         setFormErrors({
           ...formErrors,
           [name]: issues?.find((issue) => issue.path?.[0] === name)?.message,
@@ -53,7 +54,6 @@ function CoachEditForm({ initialValues, onSubmit }) {
       };
 
       const newFormValues = { ...formValues, [name]: value };
-
       setFormValues(newFormValues);
       validateField(newFormValues);
     },
@@ -69,15 +69,17 @@ function CoachEditForm({ initialValues, onSubmit }) {
     if (!formValues.firstName) issues.push({ path: ['firstName'], message: 'First name is required' });
     if (!formValues.lastName) issues.push({ path: ['lastName'], message: 'Last name is required' });
     if (!formValues.email) issues.push({ path: ['email'], message: 'Email is required' });
+    if (!formValues.password) issues.push({ path: ['password'], message: 'Password is required' });
     if (!formValues.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
     if (!formValues.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
-    if (!formValues.type) issues.push({ path: ['type'], message: 'Type is required' });
-    if (issues && issues.length > 0) {
+
+    if (issues.length > 0) {
       setFormErrors(
-        Object.fromEntries(issues.map((issue) => [issue.path?.[0], issue.message]))
+        Object.fromEntries(issues.map((issue) => [issue.path?.[0], issue.message])),
       );
       return;
     }
+
     setFormErrors({});
 
     try {
@@ -105,6 +107,7 @@ function CoachEditForm({ initialValues, onSubmit }) {
       onReset={handleFormReset}
       submitButtonLabel="Save"
       backButtonPath={`/coaches/${coachId}`}
+      camps={camps}
     />
   );
 }
@@ -115,18 +118,22 @@ CoachEditForm.propTypes = {
     firstName: PropTypes.string,
     lastName: PropTypes.string,
     email: PropTypes.string,
+    password: PropTypes.string,
     phoneNumber: PropTypes.string,
     birthDate: PropTypes.string,
+    campIds: PropTypes.arrayOf(PropTypes.number),
   }).isRequired,
   onSubmit: PropTypes.func.isRequired,
+  camps: PropTypes.array.isRequired,
 };
 
 export default function CoachEdit() {
   const { coachId } = useParams();
-
   const [coach, setCoach] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
+
+  const { camps, loading: campsLoading, error: campsError } = useCamps();
 
   const loadData = React.useCallback(async () => {
     setError(null);
@@ -135,29 +142,13 @@ export default function CoachEdit() {
     try {
       const service = new CoachService();
       const showData = await service.findById(Number(coachId));
-      let birthDate = '';
-      if (showData?.birthDate != null) {
-        if (Array.isArray(showData.birthDate) && showData.birthDate.length >= 3) {
-          const [y, m, d] = showData.birthDate;
-          const mm = String(m).padStart(2, '0');
-          const dd = String(d).padStart(2, '0');
-          birthDate = `${y}-${mm}-${dd}`;
-        } else if (typeof showData.birthDate === 'string') {
-          birthDate = showData.birthDate.substring(0, 10);
-        } else {
-          birthDate = String(showData.birthDate).substring(0, 10);
-        }
+      if (showData.birthDate) {
+        showData.birthDate = new Date(showData.birthDate).toISOString().split('T')[0];
       }
-      const mapped = {
-        id: showData.id,
-        firstName: showData.firstName ?? '',
-        lastName: showData.lastName ?? '',
-        email: showData.email ?? '',
-        phoneNumber: showData.phoneNumber ?? '',
-        birthDate,
-        type: showData.type ?? '',
-      };
-      setCoach(mapped);
+      if (showData.campCoaches) {
+        showData.campIds = showData.campCoaches.map(cc => cc.camp.id);
+      }
+      setCoach(showData);
     } catch (showDataError) {
       setError(showDataError);
     }
@@ -168,25 +159,22 @@ export default function CoachEdit() {
     loadData();
   }, [loadData]);
 
-  const handleSubmit = React.useCallback(async (formValues) => {
+  const handleSubmit = React.useCallback(
+    async (formValues) => {
       const service = new CoachService();
-      const payload = {
+      const dataToUpdate = {
+        ...formValues,
         id: Number(coachId),
-        firstName: formValues.firstName,
-        lastName: formValues.lastName,
-        email: formValues.email,
-        birthDate: formValues.birthDate || null,
-        phoneNumber: formValues.phoneNumber || null,
-        type: formValues.type || '',
+        birthDate: formValues.birthDate ? new Date(formValues.birthDate).toISOString() : null,
       };
-      await service.update(payload);
-      setCoach({ ...formValues, id: Number(coachId) });
+      const updatedData = await service.update(dataToUpdate);
+      setCoach(updatedData);
     },
     [coachId],
   );
 
   const renderEdit = React.useMemo(() => {
-    if (isLoading) {
+    if (isLoading || campsLoading) {
       return (
         <Box
           sx={{
@@ -203,18 +191,19 @@ export default function CoachEdit() {
         </Box>
       );
     }
-    if (error) {
+
+    if (error || campsError) {
       return (
         <Box sx={{ flexGrow: 1 }}>
-          <Alert severity="error">{error.message}</Alert>
+          <Alert severity="error">{(error || campsError).message}</Alert>
         </Box>
       );
     }
 
     return coach ? (
-      <CoachEditForm initialValues={coach} onSubmit={handleSubmit} />
+      <CoachEditForm initialValues={coach} onSubmit={handleSubmit} camps={camps} />
     ) : null;
-  }, [isLoading, error, coach, handleSubmit]);
+  }, [isLoading, campsLoading, error, campsError, coach, camps, handleSubmit]);
 
   return (
     <PageContainer

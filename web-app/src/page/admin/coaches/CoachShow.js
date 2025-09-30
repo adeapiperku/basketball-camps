@@ -14,8 +14,9 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate, useParams } from 'react-router';
 import { useDialogs } from '../../../hooks/useDialogs/useDialogs';
 import useNotifications from '../../../hooks/useNotifications/useNotifications';
-import PageContainer from '../../../components/PageContainer';
 import { CoachService } from '../../../service/CoachService';
+import PageContainer from '../../../components/PageContainer';
+import { formatDate } from '../../../utils/dateUtils';
 
 export default function CoachShow() {
   const { coachId } = useParams();
@@ -47,17 +48,17 @@ export default function CoachShow() {
     loadData();
   }, [loadData]);
 
-  const handleEdit = React.useCallback(() => {
+  const handleCoachEdit = React.useCallback(() => {
     navigate(`/coaches/${coachId}/edit`);
   }, [navigate, coachId]);
 
-  const handleDelete = React.useCallback(async () => {
+  const handleCoachDelete = React.useCallback(async () => {
     if (!coach) {
       return;
     }
 
     const confirmed = await dialogs.confirm(
-      `Do you want to delete ${coach.firstName} ${coach.lastName}?`,
+      `Do you want to delete ${coach.firstName}?`,
       {
         title: `Delete coach?`,
         severity: 'error',
@@ -124,7 +125,7 @@ export default function CoachShow() {
     return coach ? (
       <Box sx={{ flexGrow: 1, width: '100%' }}>
         <Grid container spacing={2} sx={{ width: '100%' }}>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Paper sx={{ px: 2, py: 1 }}>
               <Typography variant="overline">First name</Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
@@ -132,7 +133,7 @@ export default function CoachShow() {
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Paper sx={{ px: 2, py: 1 }}>
               <Typography variant="overline">Last name</Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
@@ -140,7 +141,7 @@ export default function CoachShow() {
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Paper sx={{ px: 2, py: 1 }}>
               <Typography variant="overline">Email</Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
@@ -148,23 +149,49 @@ export default function CoachShow() {
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Paper sx={{ px: 2, py: 1 }}>
-              <Typography variant="overline">Phone</Typography>
+              <Typography variant="overline">Password</Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                {"•••••"}
+              </Typography>
+            </Paper>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Paper sx={{ px: 2, py: 1 }}>
+              <Typography variant="overline">Birth date</Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                  {formatDate(coach.birthDate)}
+              </Typography>
+            </Paper>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Paper sx={{ px: 2, py: 1 }}>
+              <Typography variant="overline">Phone number</Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
                 {coach.phoneNumber}
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Paper sx={{ px: 2, py: 1 }}>
-              <Typography variant="overline">Birth date</Typography>
-              <Typography variant="body1" sx={{ mb: 1 }}>
-                {coach.birthDate}
+              <Typography variant="overline">Camps</Typography>
+              <Typography variant="body1" sx={{ mb: 1.5 }}>
+              {coach.camps && coach.camps.length > 0 ? (
+                coach.camps.map((camp) => (
+                  <Typography key={camp.id} variant="body1" sx={{ mb: 1 }}>
+                    {camp.name} – {camp.location}
+                  </Typography>
+                ))
+              ) : (
+                <Typography variant="body2" color="text.secondary">
+                  No camps assigned
+                </Typography>
+              )}
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Paper sx={{ px: 2, py: 1 }}>
               <Typography variant="overline">Type</Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
@@ -186,7 +213,7 @@ export default function CoachShow() {
             <Button
               variant="contained"
               startIcon={<EditIcon />}
-              onClick={handleEdit}
+              onClick={handleCoachEdit}
             >
               Edit
             </Button>
@@ -194,7 +221,7 @@ export default function CoachShow() {
               variant="contained"
               color="error"
               startIcon={<DeleteIcon />}
-              onClick={handleDelete}
+              onClick={handleCoachDelete}
             >
               Delete
             </Button>
@@ -202,7 +229,14 @@ export default function CoachShow() {
         </Stack>
       </Box>
     ) : null;
-  }, [isLoading, error, coach, handleBack, handleEdit, handleDelete]);
+  }, [
+    isLoading,
+    error,
+    coach,
+    handleBack,
+    handleCoachEdit,
+    handleCoachDelete,
+  ]);
 
   const pageTitle = `Coach ${coachId}`;
 

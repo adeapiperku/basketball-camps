@@ -8,6 +8,13 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Checkbox from '@mui/material/Checkbox';
+import ListItemText from '@mui/material/ListItemText';
+import useCamps from '../../../hooks/useCamps';
 
 function CoachForm(props) {
   const {
@@ -25,8 +32,7 @@ function CoachForm(props) {
   const navigate = useNavigate();
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-
-  const isEdit = Boolean(formValues?.id);
+  const {camps} = useCamps();
 
   const handleSubmit = React.useCallback(
     async (event) => {
@@ -45,6 +51,30 @@ function CoachForm(props) {
   const handleTextFieldChange = React.useCallback(
     (event) => {
       onFieldChange(event.target.name, event.target.value);
+    },
+    [onFieldChange],
+  );
+
+  const handleDateFieldChange = React.useCallback(
+    (event) => {
+      const { name, value } = event.target;
+      // HTML date input provides yyyy-MM-dd; convert to ISO string for consistency
+      if (value) {
+        try {
+          const date = new Date(value);
+          if (isNaN(date.getTime())) {
+            onFieldChange(name, null);
+          } else {
+            const iso = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
+            onFieldChange(name, iso);
+          }
+        } catch (error) {
+          console.error('Error parsing date:', error);
+          onFieldChange(name, null);
+        }
+      } else {
+        onFieldChange(name, null);
+      }
     },
     [onFieldChange],
   );
@@ -70,7 +100,7 @@ function CoachForm(props) {
     >
       <FormGroup>
         <Grid container spacing={2} sx={{ mb: 2, width: '100%' }}>
-          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
             <TextField
               value={formValues.firstName ?? ''}
               onChange={handleTextFieldChange}
@@ -81,7 +111,7 @@ function CoachForm(props) {
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
             <TextField
               value={formValues.lastName ?? ''}
               onChange={handleTextFieldChange}
@@ -92,20 +122,7 @@ function CoachForm(props) {
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
-            <TextField
-              type="date"
-              value={formValues.birthDate ?? ''}
-              onChange={handleTextFieldChange}
-              name="birthDate"
-              label="Birth date"
-              error={!!formErrors.birthDate}
-              helperText={formErrors.birthDate ?? ' '}
-              fullWidth
-              InputLabelProps={{ shrink: true }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
             <TextField
               value={formValues.email ?? ''}
               onChange={handleTextFieldChange}
@@ -116,21 +133,32 @@ function CoachForm(props) {
               fullWidth
             />
           </Grid>
-          {!isEdit && (
-            <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
-              <TextField
-                type="password"
-                value={formValues.password ?? ''}
-                onChange={handleTextFieldChange}
-                name="password"
-                label="Password"
-                error={!!formErrors.password}
-                helperText={formErrors.password ?? ' '}
-                fullWidth
-              />
-            </Grid>
-          )}
-          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
+            <TextField
+              type="password"
+              value={formValues.password ?? ''}
+              onChange={handleTextFieldChange}
+              name="password"
+              label={formValues.id ? 'New Password (leave blank to keep current)' : 'Password'}
+              error={!!formErrors.password}
+              helperText={formErrors.password || (formValues.id ? ' ' : '')}
+              fullWidth
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
+            <TextField
+              type="date"
+              name="birthDate"
+              label="Birth date"
+              value={formValues.birthDate ? new Date(formValues.birthDate).toISOString().slice(0, 10) : ''}
+              onChange={handleDateFieldChange}
+              error={!!formErrors.birthDate}
+              helperText={formErrors.birthDate ?? ' '}
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
             <TextField
               value={formValues.phoneNumber ?? ''}
               onChange={handleTextFieldChange}
@@ -141,17 +169,40 @@ function CoachForm(props) {
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
             <TextField
               value={formValues.type ?? ''}
-              onChange={handleTextFieldChange}
+              disabled
               name="type"
               label="Type"
-              placeholder="e.g., Coach"
               error={!!formErrors.type}
               helperText={formErrors.type ?? ' '}
               fullWidth
             />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
+            <FormControl fullWidth>
+              <InputLabel id="camp-select-label">Assigned Camps</InputLabel>
+              <Select
+                labelId="camp-select-label"
+                multiple
+                value={formValues.campIds ?? []}
+                onChange={(event) => onFieldChange('campIds', event.target.value)}
+                renderValue={(selected) =>
+                  camps
+                    .filter((camp) => selected.includes(camp.id))
+                    .map((c) => c.name)
+                    .join(', ')
+                }
+              >
+                {camps.map((camp) => (
+                  <MenuItem key={camp.id} value={camp.id}>
+                    <Checkbox checked={formValues.campIds?.includes(camp.id)} />
+                    <ListItemText primary={camp.name} />
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Grid>
         </Grid>
       </FormGroup>
