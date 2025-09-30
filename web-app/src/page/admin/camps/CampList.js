@@ -15,6 +15,7 @@ import { useDialogs } from '../../../hooks/useDialogs/useDialogs';
 import useNotifications from '../../../hooks/useNotifications/useNotifications';
 import PageContainer from '../../../components/PageContainer';
  import { CampService } from '../../../service/CampService';
+import { CoachService } from '../../../service/CoachService';
 
 const INITIAL_PAGE_SIZE = 10;
 
@@ -112,7 +113,14 @@ export default function CampList() {
 
     try {
       const service = new CampService();
-      const camps = await service.findAll();
+      const coachService = new CoachService();
+      const [camps, coaches] = await Promise.all([
+        service.findAll(),
+        coachService.findAll()
+      ]);
+      
+      const coachMap = new Map(coaches.map(coach => [coach.id, `${coach.firstName} ${coach.lastName}`]));
+      
       const rows = (Array.isArray(camps) ? camps : camps?.items ?? []).map((c) => ({
         id: c.id,
         name: c.name,
@@ -123,6 +131,8 @@ export default function CampList() {
         maxParticipants: c.maxParticipants,
         currentParticipants: c.currentParticipants,
         isActive: c.isActive,
+        coachId: c.coachId,
+        coachName: c.coachId ? coachMap.get(c.coachId) || 'N/A' : 'N/A',
       }));
       setRowsState({
         rows,
@@ -211,8 +221,8 @@ export default function CampList() {
   const columns = React.useMemo(
     () => [
       { field: 'id', headerName: 'ID', width: 80 },
-      { field: 'name', headerName: 'Name', width: 200 },
-      { field: 'location', headerName: 'Location', width: 160 },
+      { field: 'name', headerName: 'Name', width: 120 },
+      { field: 'location', headerName: 'Location', width: 120 },
       {
         field: 'startDate',
         headerName: 'Start date',
@@ -227,10 +237,11 @@ export default function CampList() {
         valueGetter: (value) => value && new Date(value),
         width: 140,
       },
-      { field: 'price', headerName: 'Price', width: 120, valueFormatter: ({ value }) => (value != null ? `${value} €` : '') },
+      { field: 'price', headerName: 'Price', width: 120 },
       { field: 'currentParticipants', headerName: 'Current', width: 110 },
       { field: 'maxParticipants', headerName: 'Max', width: 90 },
       { field: 'isActive', headerName: 'Active', width: 100, type: 'boolean' },
+      { field: 'coachName', headerName: 'Coach', width: 200 },
       {
         field: 'actions',
         type: 'actions',

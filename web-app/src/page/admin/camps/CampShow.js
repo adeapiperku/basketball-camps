@@ -14,8 +14,9 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate, useParams } from 'react-router';
 import { useDialogs } from '../../../hooks/useDialogs/useDialogs';
 import useNotifications from '../../../hooks/useNotifications/useNotifications';
-import PageContainer from '../../../components/PageContainer';
 import { CampService } from '../../../service/CampService';
+import PageContainer from '../../../components/PageContainer';
+import { formatDate } from '../../../utils/dateUtils';
 
 export default function CampShow() {
   const { campId } = useParams();
@@ -34,9 +35,8 @@ export default function CampShow() {
 
     try {
       const service = new CampService();
-      const showData = await service.findById(Number(campId))
-      console.log("Camp data:", showData);
-;
+      const showData = await service.findById(Number(campId));
+
       setCamp(showData);
     } catch (showDataError) {
       setError(showDataError);
@@ -48,15 +48,17 @@ export default function CampShow() {
     loadData();
   }, [loadData]);
 
-  const handleEdit = React.useCallback(() => {
+  const handleCampEdit = React.useCallback(() => {
     navigate(`/camps/${campId}/edit`);
   }, [navigate, campId]);
 
-  const handleDelete = React.useCallback(async () => {
-    if (!camp) return;
+  const handleCampDelete = React.useCallback(async () => {
+    if (!camp) {
+      return;
+    }
 
     const confirmed = await dialogs.confirm(
-      `Do you want to delete camp "${camp.name}"?`,
+      `Do you want to delete ${camp.firstName}?`,
       {
         title: `Delete camp?`,
         severity: 'error',
@@ -79,7 +81,7 @@ export default function CampShow() {
         });
       } catch (deleteError) {
         notifications.show(
-          `Failed to delete camp. Reason: ${deleteError.message}`,
+          `Failed to delete camp. Reason:' ${deleteError.message}`,
           {
             severity: 'error',
             autoHideDuration: 3000,
@@ -123,68 +125,95 @@ export default function CampShow() {
     return camp ? (
       <Box sx={{ flexGrow: 1, width: '100%' }}>
         <Grid container spacing={2} sx={{ width: '100%' }}>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Paper sx={{ px: 2, py: 1 }}>
               <Typography variant="overline">Name</Typography>
-              <Typography variant="body1">{camp.name}</Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Paper sx={{ px: 2, py: 1 }}>
-              <Typography variant="overline">Location</Typography>
-              <Typography variant="body1">{camp.location}</Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs={12}>
-            <Paper sx={{ px: 2, py: 1 }}>
-              <Typography variant="overline">Description</Typography>
-              <Typography variant="body1">{camp.description}</Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Paper sx={{ px: 2, py: 1 }}>
-              <Typography variant="overline">Start Date</Typography>
-              <Typography variant="body1">{camp.startDate}</Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Paper sx={{ px: 2, py: 1 }}>
-              <Typography variant="overline">End Date</Typography>
-              <Typography variant="body1">{camp.endDate}</Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Paper sx={{ px: 2, py: 1 }}>
-              <Typography variant="overline">Registration Deadline</Typography>
-              <Typography variant="body1">{camp.registrationDeadline}</Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Paper sx={{ px: 2, py: 1 }}>
-              <Typography variant="overline">Price (€)</Typography>
-              <Typography variant="body1">{camp.price}</Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Paper sx={{ px: 2, py: 1 }}>
-              <Typography variant="overline">Max Participants</Typography>
-              <Typography variant="body1">{camp.maxParticipants}</Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Paper sx={{ px: 2, py: 1 }}>
-              <Typography variant="overline">Current Participants</Typography>
-              <Typography variant="body1">{camp.currentParticipants}</Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Paper sx={{ px: 2, py: 1 }}>
-              <Typography variant="overline">Active</Typography>
-              <Typography variant="body1">
-                {camp.isActive ? 'Yes' : 'No'}
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                {camp.name}
               </Typography>
             </Paper>
           </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Paper sx={{ px: 2, py: 1 }}>
+              <Typography variant="overline">Description</Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                {camp.description}
+              </Typography>
+            </Paper>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Paper sx={{ px: 2, py: 1 }}>
+              <Typography variant="overline">Start Date</Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                  {formatDate(camp.startDate)}
+              </Typography>
+            </Paper>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Paper sx={{ px: 2, py: 1 }}>
+              <Typography variant="overline">End Date</Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                  {formatDate(camp.endDate)}
+              </Typography>
+            </Paper>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Paper sx={{ px: 2, py: 1 }}>
+              <Typography variant="overline">Registration Deadline</Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                  {formatDate(camp.registrationDeadline)}
+              </Typography>
+            </Paper>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Paper sx={{ px: 2, py: 1 }}>
+              <Typography variant="overline">Price</Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                {camp.price}
+              </Typography>
+            </Paper>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Paper sx={{ px: 2, py: 1 }}>
+              <Typography variant="overline">Location</Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                {camp.location}
+              </Typography>
+            </Paper>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Paper sx={{ px: 2, py: 1 }}>
+              <Typography variant="overline">Max Participants</Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                {camp.maxParticipants}
+              </Typography>
+            </Paper>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Paper sx={{ px: 2, py: 1 }}>
+              <Typography variant="overline">Current Participants</Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                {camp.currentParticipants}
+              </Typography>
+            </Paper>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Paper sx={{ px: 2, py: 1 }}>
+              <Typography variant="overline">Coaches</Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                {camp.coach}
+              </Typography>
+            </Paper>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Paper sx={{ px: 2, py: 1 }}>
+              <Typography variant="overline">Active status</Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                {camp.isActive}
+              </Typography>
+            </Paper>
+          </Grid>
+          
         </Grid>
         <Divider sx={{ my: 3 }} />
         <Stack direction="row" spacing={2} justifyContent="space-between">
@@ -199,7 +228,7 @@ export default function CampShow() {
             <Button
               variant="contained"
               startIcon={<EditIcon />}
-              onClick={handleEdit}
+              onClick={handleCampEdit}
             >
               Edit
             </Button>
@@ -207,7 +236,7 @@ export default function CampShow() {
               variant="contained"
               color="error"
               startIcon={<DeleteIcon />}
-              onClick={handleDelete}
+              onClick={handleCampDelete}
             >
               Delete
             </Button>
@@ -215,7 +244,14 @@ export default function CampShow() {
         </Stack>
       </Box>
     ) : null;
-  }, [isLoading, error, camp, handleBack, handleEdit, handleDelete]);
+  }, [
+    isLoading,
+    error,
+    camp,
+    handleBack,
+    handleCampEdit,
+    handleCampDelete,
+  ]);
 
   const pageTitle = `Camp ${campId}`;
 

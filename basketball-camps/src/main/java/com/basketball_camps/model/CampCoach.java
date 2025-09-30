@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Entity
-public class CampCoach extends UserAccount {
+public class CampCoach extends BaseEntity {
 
    @ManyToOne(fetch = FetchType.LAZY)
    @JoinColumn(name = "camp_id", nullable = false)
