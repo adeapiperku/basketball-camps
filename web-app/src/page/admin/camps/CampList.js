@@ -14,7 +14,9 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router';
 import { useDialogs } from '../../../hooks/useDialogs/useDialogs';
 import useNotifications from '../../../hooks/useNotifications/useNotifications';
 import PageContainer from '../../../components/PageContainer';
- import { CampService } from '../../../service/CampService';
+import { CampService } from '../../../service/CampService';
+import { CoachService } from '../../../service/CoachService';
+import CoachesModal from './CoachesModal';
 
 const INITIAL_PAGE_SIZE = 10;
 
@@ -48,6 +50,36 @@ export default function CampList() {
 
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
+  const [isCoachesModalOpen, setIsCoachesModalOpen] = React.useState(false);
+  const [selectedCampId, setSelectedCampId] = React.useState(null);
+  const [coaches, setCoaches] = React.useState([]);
+  const [isLoadingCoaches, setIsLoadingCoaches] = React.useState(false);
+
+  const fetchCoaches = async (campId) => {
+    try {
+      setIsLoadingCoaches(true);
+      const response = await fetch(`http://localhost:8080/camp-coaches/${campId}`);
+      if (!response.ok) throw new Error('Failed to fetch coaches');
+      const data = await response.json();
+      setCoaches(data);
+      setSelectedCampId(campId);
+      setIsCoachesModalOpen(true);
+    } catch (error) {
+      console.error('Error fetching coaches:', error);
+      notifications.error('Failed to load coaches');
+    } finally {
+      setIsLoadingCoaches(false);
+    }
+  };
+
+  const handleOpenCoachesModal = (campId) => {
+    fetchCoaches(campId);
+  };
+  const handleCloseCoachesModal = () => {
+    setIsCoachesModalOpen(false);
+    setSelectedCampId(null);
+    setCoaches([]);
+  };
 
   const handlePaginationModelChange = React.useCallback(
     (model) => {
@@ -112,7 +144,14 @@ export default function CampList() {
 
     try {
       const service = new CampService();
-      const camps = await service.findAll();
+      const coachService = new CoachService();
+      const [camps, coaches] = await Promise.all([
+        service.findAll(),
+        coachService.findAll()
+      ]);
+      
+      const coachMap = new Map(coaches.map(coach => [coach.id, `${coach.firstName} ${coach.lastName}`]));
+      
       const rows = (Array.isArray(camps) ? camps : camps?.items ?? []).map((c) => ({
         id: c.id,
         name: c.name,
@@ -123,6 +162,8 @@ export default function CampList() {
         maxParticipants: c.maxParticipants,
         currentParticipants: c.currentParticipants,
         isActive: c.isActive,
+        coachId: c.coachId,
+        coachName: c.coachId ? coachMap.get(c.coachId) || 'N/A' : 'N/A',
       }));
       setRowsState({
         rows,
@@ -211,8 +252,8 @@ export default function CampList() {
   const columns = React.useMemo(
     () => [
       { field: 'id', headerName: 'ID', width: 80 },
-      { field: 'name', headerName: 'Name', width: 200 },
-      { field: 'location', headerName: 'Location', width: 160 },
+      { field: 'name', headerName: 'Name', width: 120 },
+      { field: 'location', headerName: 'Location', width: 120 },
       {
         field: 'startDate',
         headerName: 'Start date',
@@ -227,10 +268,27 @@ export default function CampList() {
         valueGetter: (value) => value && new Date(value),
         width: 140,
       },
-      { field: 'price', headerName: 'Price', width: 120, valueFormatter: ({ value }) => (value != null ? `${value} €` : '') },
+      { field: 'price', headerName: 'Price', width: 120 },
       { field: 'currentParticipants', headerName: 'Current', width: 110 },
       { field: 'maxParticipants', headerName: 'Max', width: 90 },
       { field: 'isActive', headerName: 'Active', width: 100, type: 'boolean' },
+      {
+        field: 'coaches',
+        headerName: 'Coaches',
+        width: 150,
+        renderCell: (params) => (
+          <Button 
+            variant="outlined" 
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleOpenCoachesModal(params.row.id);
+            }}
+          >
+            View Coaches
+          </Button>
+        ),
+      },
       {
         field: 'actions',
         type: 'actions',
@@ -329,6 +387,11 @@ export default function CampList() {
           />
         )}
       </Box>
+      <CoachesModal 
+        open={isCoachesModalOpen} 
+        onClose={handleCloseCoachesModal} 
+        coaches={coaches} 
+      />
     </PageContainer>
   );
 }

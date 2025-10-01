@@ -9,10 +9,10 @@ const INITIAL_FORM_VALUES = {
   firstName: '',
   lastName: '',
   email: '',
-  password: '',
-  birthDate: '',
   phoneNumber: '',
-  type: '',
+  birthDate: '',
+  password: '',
+  type: 'Coach',
 };
 
 export default function CoachCreate() {
@@ -89,16 +89,7 @@ export default function CoachCreate() {
 
     try {
       const service = new CoachService();
-      const payload = {
-        firstName: formValues.firstName,
-        lastName: formValues.lastName,
-        email: formValues.email,
-        password: formValues.password,
-        birthDate: formValues.birthDate || null,
-        phoneNumber: formValues.phoneNumber || null,
-        type: formValues.type || '',
-      };
-      await service.create(payload);
+      await service.create(formValues);
       notifications.show('Coach created successfully.', {
         severity: 'success',
         autoHideDuration: 3000,

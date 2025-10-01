@@ -2,13 +2,13 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import FormGroup from '@mui/material/FormGroup';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router';
 import Switch from '@mui/material/Switch';
+import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
 function CampForm(props) {
@@ -21,14 +21,13 @@ function CampForm(props) {
     backButtonPath,
   } = props;
 
+
   const formValues = formState.values;
   const formErrors = formState.errors;
 
   const navigate = useNavigate();
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-
-  const isEdit = Boolean(formValues?.id);
 
   const handleSubmit = React.useCallback(
     async (event) => {
@@ -66,6 +65,29 @@ function CampForm(props) {
     [onFieldChange],
   );
 
+  const handleDateFieldChange = React.useCallback(
+    (event) => {
+      const { name, value } = event.target;
+      if (value) {
+        try {
+          const date = new Date(value);
+          if (isNaN(date.getTime())) {
+            onFieldChange(name, null);
+          } else {
+            const iso = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
+            onFieldChange(name, iso);
+          }
+        } catch (error) {
+          console.error('Error parsing date:', error);
+          onFieldChange(name, null);
+        }
+      } else {
+        onFieldChange(name, null);
+      }
+    },
+    [onFieldChange],
+  );
+
   const handleReset = React.useCallback(() => {
     if (onReset) {
       onReset(formValues);
@@ -87,7 +109,7 @@ function CampForm(props) {
     >
       <FormGroup>
         <Grid container spacing={2} sx={{ mb: 2, width: '100%' }}>
-          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
             <TextField
               value={formValues.name ?? ''}
               onChange={handleTextFieldChange}
@@ -98,7 +120,18 @@ function CampForm(props) {
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
+            <TextField
+              value={formValues.description ?? ''}
+              onChange={handleTextFieldChange}
+              name="description"
+              label="Description"
+              error={!!formErrors.description}
+              helperText={formErrors.description ?? ' '}
+              fullWidth
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
             <TextField
               value={formValues.location ?? ''}
               onChange={handleTextFieldChange}
@@ -109,95 +142,78 @@ function CampForm(props) {
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} sx={{ display: 'flex' }}>
-            <TextField
-              multiline
-              minRows={3}
-              value={formValues.description ?? ''}
-              onChange={handleTextFieldChange}
-              name="description"
-              label="Description"
-              error={!!formErrors.description}
-              helperText={formErrors.description ?? ' '}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
             <TextField
               type="date"
-              value={formValues.startDate ?? ''}
-              onChange={handleTextFieldChange}
               name="startDate"
               label="Start date"
+              value={formValues.startDate ? new Date(formValues.startDate).toISOString().slice(0, 10) : ''}
+              onChange={handleDateFieldChange}
               error={!!formErrors.startDate}
               helperText={formErrors.startDate ?? ' '}
               fullWidth
               InputLabelProps={{ shrink: true }}
             />
           </Grid>
-          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
             <TextField
               type="date"
-              value={formValues.endDate ?? ''}
-              onChange={handleTextFieldChange}
               name="endDate"
               label="End date"
+              value={formValues.endDate ? new Date(formValues.endDate).toISOString().slice(0, 10) : ''}
+              onChange={handleDateFieldChange}
               error={!!formErrors.endDate}
               helperText={formErrors.endDate ?? ' '}
               fullWidth
               InputLabelProps={{ shrink: true }}
             />
           </Grid>
-          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
             <TextField
-              type="datetime-local"
-              value={formValues.registrationDeadline ?? ''}
-              onChange={handleTextFieldChange}
+              type="date"
               name="registrationDeadline"
-              label="Registration deadline"
+              label="Registration deadline date"
+              value={formValues.registrationDeadline ? new Date(formValues.registrationDeadline).toISOString().slice(0, 10) : ''}
+              onChange={handleDateFieldChange}
               error={!!formErrors.registrationDeadline}
               helperText={formErrors.registrationDeadline ?? ' '}
               fullWidth
               InputLabelProps={{ shrink: true }}
             />
           </Grid>
-          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
             <TextField
-              type="number"
               value={formValues.price ?? ''}
-              onChange={handleNumberFieldChange}
+              onChange={handleTextFieldChange}
               name="price"
-              label="Price (€)"
+              label="Price"
               error={!!formErrors.price}
               helperText={formErrors.price ?? ' '}
               fullWidth
-              inputProps={{ min: 0, step: 0.01 }}
             />
           </Grid>
-          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
+          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
             <TextField
               type="number"
               value={formValues.maxParticipants ?? ''}
               onChange={handleNumberFieldChange}
               name="maxParticipants"
-              label="Max participants"
+              label="Max Participants"
               error={!!formErrors.maxParticipants}
               helperText={formErrors.maxParticipants ?? ' '}
               fullWidth
-              inputProps={{ min: 1, step: 1 }}
             />
           </Grid>
           <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
             <TextField
               type="number"
-              value={formValues.currentParticipants ?? 0}
+              value={formValues.currentParticipants ?? ''}
               onChange={handleNumberFieldChange}
               name="currentParticipants"
-              label="Current participants"
+              label="Current Participants"
               error={!!formErrors.currentParticipants}
               helperText={formErrors.currentParticipants ?? ' '}
               fullWidth
-              inputProps={{ min: 0, step: 1 }}
             />
           </Grid>
           <Grid item xs={12} sm={6} sx={{ display: 'flex', alignItems: 'center' }}>
@@ -212,17 +228,6 @@ function CampForm(props) {
               label="Active"
             />
           </Grid>
-          {/* <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
-            <TextField
-              value={formValues.coachId ?? ''}
-              onChange={handleTextFieldChange}
-              name="coachId"
-              label="Coach ID"
-              error={!!formErrors.coachId}
-              helperText={formErrors.coachId ?? ' '}
-              fullWidth
-            />
-          </Grid> */}
         </Grid>
       </FormGroup>
       <Stack direction="row" spacing={2} justifyContent="space-between">
@@ -256,12 +261,11 @@ CampForm.propTypes = {
       startDate: PropTypes.string,
       endDate: PropTypes.string,
       registrationDeadline: PropTypes.string,
-      price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-      maxParticipants: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-      currentParticipants: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-      isActive: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
-      // coachId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    }).isRequired,
+      price: PropTypes.string,
+      maxParticipants: PropTypes.string,
+      currentParticipants: PropTypes.string,
+      isActive: PropTypes.string,
+        }).isRequired,
     values: PropTypes.shape({
       id: PropTypes.number,
       name: PropTypes.string,
@@ -270,11 +274,10 @@ CampForm.propTypes = {
       startDate: PropTypes.string,
       endDate: PropTypes.string,
       registrationDeadline: PropTypes.string,
-      price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-      maxParticipants: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-      currentParticipants: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-      isActive: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
-      // coachId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      price: PropTypes.string,
+      maxParticipants: PropTypes.number,
+      currentParticipants: PropTypes.number,
+      isActive: PropTypes.bool,
     }).isRequired,
   }).isRequired,
   onFieldChange: PropTypes.func.isRequired,

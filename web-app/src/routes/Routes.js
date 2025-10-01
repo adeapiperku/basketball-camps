@@ -24,6 +24,7 @@ import CampList from "../page/admin/camps/CampList";
 import CampCreate from "../page/admin/camps/CampCreate";
 import CampShow from "../page/admin/camps/CampShow";
 import CampEdit from "../page/admin/camps/CampEdit";
+import CampCoachCreate from "../page/admin/campcoach/CampCoachCreate";
 
 const AppRoutes = [
   // Redirect root to /home
@@ -70,6 +71,14 @@ const AppRoutes = [
       <Route path="camps/new" element={<CampCreate />} />
       <Route path="camps/:campId" element={<CampShow />} />
       <Route path="camps/:campId/edit" element={<CampEdit />} />
+      {/* Camp Coaches routes */}
+      {/* <Route path="camp-coaches" element={<CampCoachList />} /> */}
+      <Route path="camp-coaches" element={<Navigate to="/camp-coaches/new" replace />} />
+      <Route path="camp-coaches/new" element={<CampCoachCreate />} />
+
+      {/* <Route path="camp-coaches/:campCoachId" element={<CampCoachShow />} />
+      <Route path="camp-coaches/:campCoachId/edit" element={<CampCoachEdit />} />
+      <Route path="camp-coaches/:campCoachId/new" element={<CampCoachForm />} /> */}
 
     </Route>
   ),

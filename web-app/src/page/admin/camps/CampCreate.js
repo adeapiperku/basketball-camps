@@ -1,22 +1,21 @@
-import * as React from 'react';
-import { useNavigate } from 'react-router';
-import useNotifications from '../../../hooks/useNotifications/useNotifications';
-import { CampService } from '../../../service/CampService';
-import CampForm from './CampForm';
-import PageContainer from '../../../components/PageContainer';
+import * as React from "react";
+import { useNavigate } from "react-router";
+import useNotifications from "../../../hooks/useNotifications/useNotifications";
+import { CampService } from "../../../service/CampService";
+import CampForm from "./CampForm";
+import PageContainer from "../../../components/PageContainer";
 
 const INITIAL_FORM_VALUES = {
   name: '',
   description: '',
-  location: '',
-  startDate: '', // yyyy-MM-dd
-  endDate: '',   // yyyy-MM-dd
-  registrationDeadline: '', // yyyy-MM-ddTHH:mm
+  startDate: '',
+  endDate: '',
   price: '',
   maxParticipants: '',
   currentParticipants: 0,
-  // coachId: '',
-  isActive: true,
+  location: '',
+  isActive: '',
+  registrationDeadline: '',
 };
 
 export default function CampCreate() {
@@ -51,12 +50,13 @@ export default function CampCreate() {
         const issues = [];
         if (!values.name) issues.push({ path: ['name'], message: 'Name is required' });
         if (!values.description) issues.push({ path: ['description'], message: 'Description is required' });
-        if (!values.location) issues.push({ path: ['location'], message: 'Location is required' });
         if (!values.startDate) issues.push({ path: ['startDate'], message: 'Start date is required' });
         if (!values.endDate) issues.push({ path: ['endDate'], message: 'End date is required' });
-        if (!values.registrationDeadline) issues.push({ path: ['registrationDeadline'], message: 'Registration deadline is required' });
-        if (!values.price || Number(values.price) <= 0) issues.push({ path: ['price'], message: 'Price must be greater than 0' });
-        if (!values.maxParticipants || Number(values.maxParticipants) <= 0) issues.push({ path: ['maxParticipants'], message: 'Max participants must be greater than 0' });
+        if (!values.price) issues.push({ path: ['price'], message: 'Price is required' });
+        if (!values.maxParticipants) issues.push({ path: ['maxParticipants'], message: 'Max Participants number is required' });
+        if (!values.location) issues.push({ path: ['location'], message: 'Location is required' });
+        if (!values.isActive) issues.push({ path: ['isActive'], message: 'Is active status is required' });
+        if (!values.registrationDeadline) issues.push({ path: ['registrationDeadline'], message: 'Registration deadline date is required' });
         setFormErrors({
           ...formErrors,
           [name]: issues?.find((issue) => issue.path?.[0] === name)?.message,
@@ -77,51 +77,41 @@ export default function CampCreate() {
 
   const handleFormSubmit = React.useCallback(async () => {
     const issues = [];
-    if (!formValues.name) issues.push({ path: ['name'], message: 'Name is required' });
-    if (!formValues.description) issues.push({ path: ['description'], message: 'Description is required' });
-    if (!formValues.location) issues.push({ path: ['location'], message: 'Location is required' });
-    if (!formValues.startDate) issues.push({ path: ['startDate'], message: 'Start date is required' });
-    if (!formValues.endDate) issues.push({ path: ['endDate'], message: 'End date is required' });
-    if (!formValues.registrationDeadline) issues.push({ path: ['registrationDeadline'], message: 'Registration deadline is required' });
-    if (!formValues.price || Number(formValues.price) <= 0) issues.push({ path: ['price'], message: 'Price must be greater than 0' });
-    if (!formValues.maxParticipants || Number(formValues.maxParticipants) <= 0) issues.push({ path: ['maxParticipants'], message: 'Max participants must be greater than 0' });
-    if (issues && issues.length > 0) {
-      setFormErrors(
-        Object.fromEntries(issues.map((issue) => [issue.path?.[0], issue.message]))
-      );
+      if (!formValues.name) issues.push({ path: ['name'], message: 'Name is required' });
+      if (!formValues.description) issues.push({ path: ['description'], message: 'Description is required' });
+      if (!formValues.startDate) issues.push({ path: ['startDate'], message: 'Start date is required' });
+      if (!formValues.endDate) issues.push({ path: ['endDate'], message: 'End date is required' });
+      if (!formValues.price) issues.push({ path: ['price'], message: 'Price is required' });
+      if (!formValues.maxParticipants) issues.push({ path: ['maxParticipants'], message: 'Max Participants number is required' });
+      if (!formValues.location) issues.push({ path: ['location'], message: 'Location is required' });
+      if (!formValues.isActive) issues.push({ path: ['isActive'], message: 'Is active status is required' });
+      if (!formValues.registrationDeadline) issues.push({ path: ['registrationDeadline'], message: 'Registration deadline date is required' });
+      if (issues && issues.length > 0) {
+        setFormErrors(
+          Object.fromEntries(
+            issues.map((issue) => [issue.path?.[0], issue.message])
+          )
+        );
       return;
     }
     setFormErrors({});
 
     try {
       const service = new CampService();
-      const payload = {
-        name: formValues.name,
-        description: formValues.description,
-        startDate: formValues.startDate,
-        endDate: formValues.endDate,
-        price: Number(formValues.price),
-        maxParticipants: Number(formValues.maxParticipants),
-        currentParticipants: Number(formValues.currentParticipants ?? 0),
-        location: formValues.location,
-        // coach: formValues.coachId ? { id: Number(formValues.coachId) } : null,
-        isActive: Boolean(formValues.isActive),
-        registrationDeadline: formValues.registrationDeadline,
-      };
-      await service.create(payload);
-      notifications.show('Camp created successfully.', {
-        severity: 'success',
+      await service.create(formValues);
+      notifications.show("Camp created successfully.", {
+        severity: "success",
         autoHideDuration: 3000,
       });
 
-      navigate('/camps');
+      navigate("/camps");
     } catch (createError) {
       notifications.show(
         `Failed to create camp. Reason: ${createError.message}`,
         {
-          severity: 'error',
+          severity: "error",
           autoHideDuration: 3000,
-        },
+        }
       );
       throw createError;
     }
@@ -130,7 +120,7 @@ export default function CampCreate() {
   return (
     <PageContainer
       title="New Camp"
-      breadcrumbs={[{ title: 'Camps', path: '/camps' }, { title: 'New' }]}
+      breadcrumbs={[{ title: "Camps", path: "/camps" }, { title: "New" }]}
     >
       <CampForm
         formState={formState}

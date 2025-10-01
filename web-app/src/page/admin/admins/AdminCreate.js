@@ -77,7 +77,7 @@ export default function AdminCreate() {
     if (!formValues.email) issues.push({ path: ['email'], message: 'Email is required' });
     if (!formValues.password) issues.push({ path: ['password'], message: 'Password is required' });
     if (!formValues.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
-    if (!formValues.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number date is required' });
+    if (!formValues.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
     if (!formValues.type) issues.push({ path: ['type'], message: 'Type is required' });
     if (issues && issues.length > 0) {
       setFormErrors(

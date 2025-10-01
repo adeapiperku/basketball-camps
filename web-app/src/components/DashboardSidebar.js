@@ -20,6 +20,8 @@ import DomainIcon from '@mui/icons-material/Domain';
 import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
 import PersonIcon from '@mui/icons-material/Person';
 import SportsBasketballIcon from '@mui/icons-material/SportsBasketball';
+import WorkspacesIcon from '@mui/icons-material/Workspaces';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 
 function DashboardSidebar({
   expanded = true,
@@ -94,7 +96,7 @@ function DashboardSidebar({
           component="nav"
           aria-label={`${viewport.charAt(0).toUpperCase()}${viewport.slice(1)}`}
           sx={{
-            height: '100%',
+            height: 'calc(100vh - 64px)',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
@@ -138,19 +140,33 @@ function DashboardSidebar({
               selected={!!matchPath('/coaches/*', pathname) || pathname === '/'}
             />
             <DashboardSidebarPageItem
+              id="camps"
+              title="Camps"
+              icon={<SportsBasketballIcon />}
+              href="/camps"
+              selected={!!matchPath('/camps/*', pathname) || pathname === '/'}
+            />
+            <DashboardSidebarPageItem
+              id="camp-coaches"
+              title="Camp Coaches"
+              icon={<WorkspacesIcon />}
+              href="/camp-coaches"
+              selected={!!matchPath('/camp-coaches/*', pathname) || pathname === '/'}
+            />
+            <DashboardSidebarPageItem
+              id="registrations"
+              title="Registrations"
+              icon={<FormatListBulletedIcon />}
+              href="/registrations"
+              selected={!!matchPath('/registrations/*', pathname) || pathname === '/'}
+            />
+            <DashboardSidebarPageItem
               id="schools"
               title="Schools"
               icon={<DomainIcon />}
               href="/schools"
               selected={!!matchPath('/schools/*', pathname) || pathname === '/'}
             />
-            <DashboardSidebarPageItem
-              id="camps"
-              title="Camps"
-              icon={<SportsBasketballIcon />}
-              href="/camps"
-              selected={!!matchPath('/camps/*', pathname) || pathname === '/'}
-            />           
           </List>
         </Box>
       </React.Fragment>
@@ -168,13 +184,6 @@ function DashboardSidebar({
         flexShrink: 0,
         ...getDrawerWidthTransitionMixin(expanded),
         ...(isTemporary ? { position: 'absolute' } : {}),
-        [`& .MuiDrawer-paper`]: {
-          position: 'absolute',
-          width: drawerWidth,
-          boxSizing: 'border-box',
-          backgroundImage: 'none',
-          ...getDrawerWidthTransitionMixin(expanded),
-        },
       };
     },
     [expanded, mini],
