@@ -8,14 +8,14 @@ import List from '@mui/material/List';
 import Toolbar from '@mui/material/Toolbar';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { matchPath, useLocation } from 'react-router';
-import DashboardSidebarContext from '../context/DashboardSidebarContext';
-import { DRAWER_WIDTH, MINI_DRAWER_WIDTH } from '../constants';
+import DashboardSidebarContext from '../../context/DashboardSidebarContext';
+import { DRAWER_WIDTH, MINI_DRAWER_WIDTH } from '../../constants';
 import DashboardSidebarPageItem from './DashboardSidebarPageItem';
 import DashboardSidebarHeaderItem from './DashboardSidebarHeaderItem';
 import {
   getDrawerSxTransitionMixin,
   getDrawerWidthTransitionMixin,
-} from '../mixins';
+} from '../../mixins';
 import DomainIcon from '@mui/icons-material/Domain';
 import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
 import PersonIcon from '@mui/icons-material/Person';
