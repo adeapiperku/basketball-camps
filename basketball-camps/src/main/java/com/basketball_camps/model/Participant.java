@@ -9,8 +9,8 @@ import lombok.EqualsAndHashCode;
 @Entity
 public class Participant extends UserAccount {
 
-    @Transient
-    private String type = "Participant";
+    @Column(nullable = false, updatable = false)
+    private final String type = "Participant";
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "school_id")

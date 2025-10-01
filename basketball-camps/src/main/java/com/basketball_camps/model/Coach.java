@@ -12,9 +12,8 @@ import lombok.EqualsAndHashCode;
 @Entity
 public class Coach extends UserAccount {
 
-   @Transient
-   private String type = "Coach";
-
+   @Column(nullable = false, updatable = false)
+   private final String type = "Coach";
    // @OneToMany(mappedBy = "coach", cascade = CascadeType.ALL, orphanRemoval = true)
    // private Set<CampCoach> campCoaches = new HashSet<>();
 

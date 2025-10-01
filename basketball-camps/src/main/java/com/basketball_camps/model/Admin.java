@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 @Entity
 public class Admin extends UserAccount {
 
-   @Transient
-   private String type = "Admin";
+   @Column(nullable = false, updatable = false)
+   private final String type = "Admin";
 
 }

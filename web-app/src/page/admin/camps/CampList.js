@@ -51,9 +51,9 @@ export default function CampList() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
   const [isCoachesModalOpen, setIsCoachesModalOpen] = React.useState(false);
-  const [setSelectedCampId] = React.useState(null);
+  const [selectedCampId, setSelectedCampId] = React.useState(null);
   const [coaches, setCoaches] = React.useState([]);
-  const [setIsLoadingCoaches] = React.useState(false);
+  const [isLoadingCoaches, setIsLoadingCoaches] = React.useState(false);
 
   const fetchCoaches = async (campId) => {
     try {
