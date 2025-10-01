@@ -3,7 +3,6 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
-import FormLabel from '@mui/material/FormLabel';
 import FormControl from '@mui/material/FormControl';
 import Link from '@mui/material/Link';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
@@ -34,6 +33,22 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
   [theme.breakpoints.up('sm')]: { padding: theme.spacing(4) },
 }));
 
+const compactTextField = {
+  "& .MuiOutlinedInput-root": {
+    borderRadius: "10px",
+    fontSize: "0.9rem",
+    height: "40px", // makes inputs less tall
+    backgroundColor: "#fafafa",
+    "& input": {
+      padding: "10px 12px",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "#1976d2",
+      boxShadow: "0 0 0 2px rgba(25, 118, 210, 0.15)",
+    },
+  },
+};
+
 export default function SignUp() {
   const navigate = useNavigate();
   const [errors, setErrors] = React.useState({});
@@ -59,6 +74,7 @@ export default function SignUp() {
       password: data.get('password'),
       birthDate: data.get('birthDate'),
       phoneNumber: data.get('phoneNumber')?.trim(),
+      emergencyContactPhone: data.get('emergencyContactPhone')?.trim(),
       type: 'Participant', // always create new users as Participant
     };
 
@@ -94,7 +110,10 @@ export default function SignUp() {
             <Typography
               component="h1"
               variant="h4"
-              sx={{ width: '100%', textAlign: 'center', fontSize: 'clamp(2rem, 6vw, 2.15rem)' }}
+              sx={{ width: '100%', textAlign: 'center',
+                fontSize: 'clamp(2rem, 6vw, 2.15rem)',
+                color: 'primary.main', fontWeight: 'bold',
+              }}            
             >
               Sign up
             </Typography>
@@ -105,38 +124,30 @@ export default function SignUp() {
               </Typography>
             )}
 
-            <Box component="form" onSubmit={handleSubmit} noValidate sx={{ display: 'flex', flexDirection: 'column', width: '100%', gap: 2 }}>
+            <Box component="form" onSubmit={handleSubmit} noValidate sx={{ display: 'flex', flexDirection: 'column', width: '100%', gap: 1.5 }}>
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                 <FormControl fullWidth>
-                  <FormLabel htmlFor="firstName">First name</FormLabel>
-                  <TextField id="firstName" name="firstName" autoComplete="given-name" error={!!errors.firstName} helperText={errors.firstName || ' '} required fullWidth />
+                  <TextField placeholder='First name' sx={compactTextField} id="firstName" name="firstName" autoComplete="given-name" error={!!errors.firstName} helperText={errors.firstName || ' '} required fullWidth />
                 </FormControl>
                 <FormControl fullWidth>
-                  <FormLabel htmlFor="lastName">Last name</FormLabel>
-                  <TextField id="lastName" name="lastName" autoComplete="family-name" error={!!errors.lastName} helperText={errors.lastName || ' '} required fullWidth />
+                  <TextField placeholder='Last name' sx={compactTextField} id="lastName" name="lastName" autoComplete="family-name" error={!!errors.lastName} helperText={errors.lastName || ' '} required fullWidth />
                 </FormControl>
               </Stack>
-
               <FormControl>
-                <FormLabel htmlFor="email">Email</FormLabel>
-                <TextField id="email" type="email" name="email" placeholder="your@email.com" autoComplete="email" error={!!errors.email} helperText={errors.email || ' '} required fullWidth variant="outlined" />
+                <TextField sx={compactTextField} id="email" type="email" name="email" placeholder="your@email.com" autoComplete="email" error={!!errors.email} helperText={errors.email || ' '} required fullWidth variant="outlined" />
               </FormControl>
-
+              <FormControl fullWidth>
+                <TextField placeholder='Password' sx={compactTextField} name="password" type="password" id="password" autoComplete="new-password" error={!!errors.password} helperText={errors.password || ' '} required fullWidth />
+              </FormControl>
+              <FormControl fullWidth>
+                  <TextField label="Birth date" sx={compactTextField} id="birthDate" name="birthDate" type="date" InputLabelProps={{ shrink: true }} />
+              </FormControl>
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                 <FormControl fullWidth>
-                  <FormLabel htmlFor="password">Password</FormLabel>
-                  <TextField name="password" type="password" id="password" autoComplete="new-password" error={!!errors.password} helperText={errors.password || ' '} required fullWidth />
-                </FormControl>
-              </Stack>
-
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                <FormControl fullWidth>
-                  <FormLabel htmlFor="birthDate">Birth date</FormLabel>
-                  <TextField id="birthDate" name="birthDate" type="date" InputLabelProps={{ shrink: true }} />
+                  <TextField placeholder='Phone number' sx={compactTextField} id="phoneNumber" name="phoneNumber" />
                 </FormControl>
                 <FormControl fullWidth>
-                  <FormLabel htmlFor="phoneNumber">Phone number</FormLabel>
-                  <TextField id="phoneNumber" name="phoneNumber" />
+                  <TextField placeholder='Emergency Contact Phone' sx={compactTextField} id="emergencyContactPhone" name="emergencyContactPhone" />
                 </FormControl>
               </Stack>
 

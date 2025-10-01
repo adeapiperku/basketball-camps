@@ -120,7 +120,7 @@ export default function ParticipantList() {
         email: a.email,
         phoneNumber: a.phoneNumber,
         emergencyContactPhone: a.emergencyContactPhone,
-        school: a.school?.name,
+        // school: a.school?.name,
         birthDate: a.birthDate,
         type: a.type,
       }));
@@ -215,7 +215,7 @@ export default function ParticipantList() {
       { field: 'lastName', headerName: 'Last name', width: 140 },
       { field: 'type', headerName: 'Type', width: 120 },
       { field: 'email', headerName: 'Email', width: 140 },
-      { field: 'school', headerName: 'School', width: 100 },
+      // { field: 'school', headerName: 'School', width: 100 },
       {
         field: 'birthDate',
         headerName: 'Birth date',
