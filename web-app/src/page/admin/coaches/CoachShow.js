@@ -175,24 +175,6 @@ export default function CoachShow() {
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Paper sx={{ px: 2, py: 1 }}>
-              <Typography variant="overline">Camps</Typography>
-              <Typography variant="body1" sx={{ mb: 1.5 }}>
-              {coach.camps && coach.camps.length > 0 ? (
-                coach.camps.map((camp) => (
-                  <Typography key={camp.id} variant="body1" sx={{ mb: 1 }}>
-                    {camp.name} – {camp.location}
-                  </Typography>
-                ))
-              ) : (
-                <Typography variant="body2" color="text.secondary">
-                  No camps assigned
-                </Typography>
-              )}
-              </Typography>
-            </Paper>
-          </Grid>
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <Paper sx={{ px: 2, py: 1 }}>
               <Typography variant="overline">Type</Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
                 {coach.type}

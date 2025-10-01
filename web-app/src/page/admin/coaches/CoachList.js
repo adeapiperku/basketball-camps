@@ -121,8 +121,6 @@ export default function CoachList() {
         phoneNumber: a.phoneNumber,
         birthDate: a.birthDate,
         type: a.type,
-        // camps: (a.campCoaches ?? []).map((cc) => cc.camp.name).join(', '),
-        camps: (a.campCoaches ?? []).map((cc) => cc.camp?.name).join(', '),
       }));
       setRowsState({
         rows,
@@ -222,14 +220,6 @@ export default function CoachList() {
         type: 'date',
         valueGetter: (value) => value && new Date(value),
         width: 160,
-      },
-      {
-        field: 'camps',
-        headerName: 'Camps',
-        flex: 1,
-        minWidth: 200,
-        sortable: false,
-        filterable: false,
       },
       {
         field: 'actions',

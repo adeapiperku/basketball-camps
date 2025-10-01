@@ -8,13 +8,6 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import Checkbox from '@mui/material/Checkbox';
-import ListItemText from '@mui/material/ListItemText';
-import useCamps from '../../../hooks/useCamps';
 
 function CoachForm(props) {
   const {
@@ -32,7 +25,6 @@ function CoachForm(props) {
   const navigate = useNavigate();
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const {camps} = useCamps();
 
   const handleSubmit = React.useCallback(
     async (event) => {
@@ -179,30 +171,6 @@ function CoachForm(props) {
               helperText={formErrors.type ?? ' '}
               fullWidth
             />
-          </Grid>
-          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
-            <FormControl fullWidth>
-              <InputLabel id="camp-select-label">Assigned Camps</InputLabel>
-              <Select
-                labelId="camp-select-label"
-                multiple
-                value={formValues.campIds ?? []}
-                onChange={(event) => onFieldChange('campIds', event.target.value)}
-                renderValue={(selected) =>
-                  camps
-                    .filter((camp) => selected.includes(camp.id))
-                    .map((c) => c.name)
-                    .join(', ')
-                }
-              >
-                {camps.map((camp) => (
-                  <MenuItem key={camp.id} value={camp.id}>
-                    <Checkbox checked={formValues.campIds?.includes(camp.id)} />
-                    <ListItemText primary={camp.name} />
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
           </Grid>
         </Grid>
       </FormGroup>
