@@ -8,11 +8,6 @@ import TextField from '@mui/material/TextField';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router';
 import Switch from '@mui/material/Switch';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import { CoachService } from '../../../service/CoachService';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
@@ -26,28 +21,6 @@ function CampForm(props) {
     backButtonPath,
   } = props;
 
-  const [coaches, setCoaches] = React.useState([]);
-  const [isLoadingCoaches, setIsLoadingCoaches] = React.useState(true);
-
-  React.useEffect(() => {
-    const fetchCoaches = async () => {
-      try {
-        const coachService = new CoachService();
-        const data = await coachService.findAll();
-        setCoaches(Array.isArray(data) ? data : data?.items ?? []);
-      } catch (error) {
-        console.error('Failed to fetch coaches:', error);
-      } finally {
-        setIsLoadingCoaches(false);
-      }
-    };
-
-    fetchCoaches();
-  }, []);
-
-  const handleCoachChange = (event) => {
-    onFieldChange('coachId', event.target.value || null);
-  };
 
   const formValues = formState.values;
   const formErrors = formState.errors;
@@ -231,7 +204,7 @@ function CampForm(props) {
               fullWidth
             />
           </Grid>
-          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
+          <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
             <TextField
               type="number"
               value={formValues.currentParticipants ?? ''}
@@ -242,34 +215,6 @@ function CampForm(props) {
               helperText={formErrors.currentParticipants ?? ' '}
               fullWidth
             />
-          </Grid>
-          <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
-            <FormControl fullWidth error={!!formErrors.coachId}>
-              <InputLabel id="coach-select-label">Coach</InputLabel>
-              <Select
-                labelId="coach-select-label"
-                id="coach-select"
-                name="coachId"
-                value={formValues.coachId || ''}
-                label="Coach"
-                onChange={handleCoachChange}
-                disabled={isLoadingCoaches}
-              >
-                <MenuItem value="">
-                  <em>Select a coach</em>
-                </MenuItem>
-                {coaches.map((coach) => (
-                  <MenuItem key={coach.id} value={coach.id}>
-                    {coach.firstName} {coach.lastName}
-                  </MenuItem>
-                ))}
-              </Select>
-              {formErrors.coachId && (
-                <div style={{ color: '#d32f2f', fontSize: '0.75rem', margin: '3px 14px 0' }}>
-                  {formErrors.coachId}
-                </div>
-              )}
-            </FormControl>
           </Grid>
           <Grid item xs={12} sm={6} sx={{ display: 'flex', alignItems: 'center' }}>
             <FormControlLabel
@@ -320,8 +265,7 @@ CampForm.propTypes = {
       maxParticipants: PropTypes.string,
       currentParticipants: PropTypes.string,
       isActive: PropTypes.string,
-      coachId: PropTypes.string,
-    }).isRequired,
+        }).isRequired,
     values: PropTypes.shape({
       id: PropTypes.number,
       name: PropTypes.string,
@@ -334,7 +278,6 @@ CampForm.propTypes = {
       maxParticipants: PropTypes.number,
       currentParticipants: PropTypes.number,
       isActive: PropTypes.bool,
-      coachId: PropTypes.number,
     }).isRequired,
   }).isRequired,
   onFieldChange: PropTypes.func.isRequired,

@@ -96,7 +96,7 @@ function DashboardSidebar({
           component="nav"
           aria-label={`${viewport.charAt(0).toUpperCase()}${viewport.slice(1)}`}
           sx={{
-            height: '100%',
+            height: 'calc(100vh - 64px)',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
@@ -184,13 +184,6 @@ function DashboardSidebar({
         flexShrink: 0,
         ...getDrawerWidthTransitionMixin(expanded),
         ...(isTemporary ? { position: 'absolute' } : {}),
-        [`& .MuiDrawer-paper`]: {
-          position: 'absolute',
-          width: drawerWidth,
-          boxSizing: 'border-box',
-          backgroundImage: 'none',
-          ...getDrawerWidthTransitionMixin(expanded),
-        },
       };
     },
     [expanded, mini],

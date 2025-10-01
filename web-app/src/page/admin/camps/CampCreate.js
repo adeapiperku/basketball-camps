@@ -14,7 +14,6 @@ const INITIAL_FORM_VALUES = {
   maxParticipants: '',
   currentParticipants: 0,
   location: '',
-  // coach: formValues.coachId ? { id: Number(formValues.coachId) } : null,
   isActive: '',
   registrationDeadline: '',
 };
@@ -55,10 +54,8 @@ export default function CampCreate() {
         if (!values.endDate) issues.push({ path: ['endDate'], message: 'End date is required' });
         if (!values.price) issues.push({ path: ['price'], message: 'Price is required' });
         if (!values.maxParticipants) issues.push({ path: ['maxParticipants'], message: 'Max Participants number is required' });
-        if (!values.currentParticipants) issues.push({ path: ['currentParticipants'], message: 'CurrentParticipants number is required' });
         if (!values.location) issues.push({ path: ['location'], message: 'Location is required' });
         if (!values.isActive) issues.push({ path: ['isActive'], message: 'Is active status is required' });
-        if (!values.coach) issues.push({ path: ['coach'], message: 'Coaches of the camp are required' });
         if (!values.registrationDeadline) issues.push({ path: ['registrationDeadline'], message: 'Registration deadline date is required' });
         setFormErrors({
           ...formErrors,
@@ -86,10 +83,8 @@ export default function CampCreate() {
       if (!formValues.endDate) issues.push({ path: ['endDate'], message: 'End date is required' });
       if (!formValues.price) issues.push({ path: ['price'], message: 'Price is required' });
       if (!formValues.maxParticipants) issues.push({ path: ['maxParticipants'], message: 'Max Participants number is required' });
-      if (!formValues.currentParticipants) issues.push({ path: ['currentParticipants'], message: 'CurrentParticipants number is required' });
       if (!formValues.location) issues.push({ path: ['location'], message: 'Location is required' });
       if (!formValues.isActive) issues.push({ path: ['isActive'], message: 'Is active status is required' });
-      if (!formValues.coach) issues.push({ path: ['coach'], message: 'Coaches of the camp are required' });
       if (!formValues.registrationDeadline) issues.push({ path: ['registrationDeadline'], message: 'Registration deadline date is required' });
       if (issues && issues.length > 0) {
         setFormErrors(

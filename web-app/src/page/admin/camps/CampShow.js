@@ -199,17 +199,9 @@ export default function CampShow() {
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Paper sx={{ px: 2, py: 1 }}>
-              <Typography variant="overline">Coaches</Typography>
-              <Typography variant="body1" sx={{ mb: 1 }}>
-                {camp.coach}
-              </Typography>
-            </Paper>
-          </Grid>
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <Paper sx={{ px: 2, py: 1 }}>
-              <Typography variant="overline">Active status</Typography>
-              <Typography variant="body1" sx={{ mb: 1 }}>
-                {camp.isActive}
+              <Typography variant="overline">Status</Typography>
+              <Typography variant="body1" sx={{ mb: 1, color: camp.isActive ? 'success.main' : 'text.secondary' }}>
+                {camp.isActive ? 'Active' : 'Inactive'}
               </Typography>
             </Paper>
           </Grid>
