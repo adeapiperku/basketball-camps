@@ -10,8 +10,8 @@ import lombok.EqualsAndHashCode;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+// import java.util.HashSet;
+// import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -50,8 +50,8 @@ public class Camp extends BaseEntity {
    @Column(nullable = false)
    private String location;
 
-   @OneToMany(mappedBy = "camp", cascade = CascadeType.ALL, orphanRemoval = true)
-   private Set<CampCoach> campCoaches = new HashSet<>();
+   // @OneToMany(mappedBy = "camp", cascade = CascadeType.ALL, orphanRemoval = true)
+   // private Set<CampCoach> campCoaches = new HashSet<>();
 
    @Column(nullable = false)
    private Boolean isActive;
