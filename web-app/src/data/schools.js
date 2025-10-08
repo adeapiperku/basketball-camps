@@ -10,9 +10,9 @@ export function setSchoolsStore(schools) {
 }
 
 export async function getMany({ paginationModel, filterModel, sortModel }) {
-  const adminsStore = getSchoolsStore();
+  const schoolsStore = getSchoolsStore();
 
-  let filteredAdmins = [...adminsStore];
+  let filteredSchools = [...schoolsStore];
 
   // Apply filters (example only)
   if (filterModel?.items?.length) {
@@ -21,28 +21,28 @@ export async function getMany({ paginationModel, filterModel, sortModel }) {
         return;
       }
 
-      filteredAdmins = filteredAdmins.filter((school) => {
-        const adminValue = school[field];
+      filteredSchools = filteredSchools.filter((school) => {
+        const schoolValue = school[field];
 
         switch (operator) {
           case 'contains':
-            return String(adminValue)
+            return String(schoolValue)
               .toLowerCase()
               .includes(String(value).toLowerCase());
           case 'equals':
-            return adminValue === value;
+            return schoolValue === value;
           case 'startsWith':
-            return String(adminValue)
+            return String(schoolValue)
               .toLowerCase()
               .startsWith(String(value).toLowerCase());
           case 'endsWith':
-            return String(adminValue)
+            return String(schoolValue)
               .toLowerCase()
               .endsWith(String(value).toLowerCase());
           case '>':
-            return adminValue > value;
+            return schoolValue > value;
           case '<':
-            return adminValue < value;
+            return schoolValue < value;
           default:
             return true;
         }
@@ -52,7 +52,7 @@ export async function getMany({ paginationModel, filterModel, sortModel }) {
 
   // Apply sorting
   if (sortModel?.length) {
-    filteredAdmins.sort((a, b) => {
+    filteredSchools.sort((a, b) => {
       for (const { field, sort } of sortModel) {
         if (a[field] < b[field]) {
           return sort === 'asc' ? -1 : 1;
@@ -68,65 +68,64 @@ export async function getMany({ paginationModel, filterModel, sortModel }) {
   // Apply pagination
   const start = paginationModel.page * paginationModel.pageSize;
   const end = start + paginationModel.pageSize;
-  const paginatedAdmins = filteredAdmins.slice(start, end);
+  const paginatedSchools = filteredSchools.slice(start, end);
 
   return {
-    items: paginatedAdmins,
-    itemCount: filteredAdmins.length,
+    items: paginatedSchools,
+    itemCount: filteredSchools.length,
   };
 }
 
-export async function getOne(adminId) {
-  const adminsStore = getSchoolsStore();
+export async function getOne(schoolId) {
+  const schoolsStore = getSchoolsStore();
 
-  const adminToShow = adminsStore.find(
-    (school) => school.id === adminId,
+  const schoolToShow = schoolsStore.find(
+    (school) => school.id === schoolId,
   );
 
-  if (!adminToShow) {
-    throw new Error('Admin not found');
+  if (!schoolToShow) {
+    throw new Error('School not found');
   }
-  return adminToShow;
+  return schoolToShow;
 }
 
 export async function createOne(data) {
-  const adminsStore = getSchoolsStore();
+  const schoolsStore = getSchoolsStore();
 
-  const newAdmin = {
-    id: adminsStore.reduce((max, school) => Math.max(max, school.id), 0) + 1,
+  const newSchool = {
+    id: schoolsStore.reduce((max, school) => Math.max(max, school.id), 0) + 1,
     ...data,
   };
 
-  setSchoolsStore([...adminsStore, newAdmin]);
+  setSchoolsStore([...schoolsStore, newSchool]);
 
-  return newAdmin;
+  return newSchool;
 }
 
-export async function updateOne(adminId, data) {
-  const adminsStore = getSchoolsStore();
+export async function updateOne(schoolId, data) {
+  const schoolsStore = getSchoolsStore();
 
-  let updatedAdmin = null;
+  let updatedSchool = null;
 
   setSchoolsStore(
-    adminsStore.map((school) => {
-      if (school.id === adminId) {
-        updatedAdmin = { ...school, ...data };
-        return updatedAdmin;
+    schoolsStore.map((school) => {
+      if (school.id === schoolId) {
+        updatedSchool = { ...school, ...data };
+        return updatedSchool;
       }
       return school;
     }),
   );
 
-  if (!updatedAdmin) {
-    throw new Error('Admin not found');
+  if (!updatedSchool) {
+    throw new Error('School not found');
   }
-  return updatedAdmin;
+  return updatedSchool;
 }
 
-export async function deleteOne(adminId) {
-  const adminsStore = getSchoolsStore();
-
-  setSchoolsStore(adminsStore.filter((school) => school.id !== adminId));
+export async function deleteOne(schoolId) {
+  const schoolsStore = getSchoolsStore();
+  setSchoolsStore(schoolsStore.filter((school) => school.id !== schoolId));
 }
 
 
