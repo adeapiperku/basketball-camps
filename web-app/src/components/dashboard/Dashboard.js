@@ -1,9 +1,8 @@
-import * as React from 'react';
-import CssBaseline from '@mui/material/CssBaseline';
-import { Routes } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
+import { AdminRoutes } from '../../routes/Routes';
 import NotificationsProvider from '../../hooks/useNotifications/NotificationsProvider';
 import DialogsProvider from '../../hooks/useDialogs/DialogsProvider';
-import AppRoutes from '../../routes/Routes';
+import CssBaseline from '@mui/material/CssBaseline';
 
 export default function Dashboard() {
   return (
@@ -11,7 +10,19 @@ export default function Dashboard() {
       <CssBaseline />
       <NotificationsProvider>
         <DialogsProvider>
-          <Routes>{AppRoutes}</Routes>
+          <Routes>
+            {AdminRoutes.map((route) => (
+              <Route key={route.path} path={route.path} element={route.element}>
+                {route.children?.map((child) => (
+                  <Route
+                    key={child.path}
+                    path={child.path}
+                    element={child.element}
+                  />
+                ))}
+              </Route>
+            ))}
+          </Routes>
         </DialogsProvider>
       </NotificationsProvider>
     </>

@@ -1,24 +1,25 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
 import './index.css';
-import App from './components/dashboard/Dashboard';
+import App from './App';
+import { ThemeProvider } from '@mui/material/styles';
 import reportWebVitals from './reportWebVitals';
 import { AuthProvider } from './context/AuthContext';
+import DialogsProvider from './hooks/useDialogs/DialogsProvider';
+import NotificationsProvider from './hooks/useNotifications/NotificationsProvider';
 import theme from './theme';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <BrowserRouter>
-        <AuthProvider>
+    <AuthProvider>
+      <DialogsProvider>
+        <NotificationsProvider>
           <App />
-        </AuthProvider>
-      </BrowserRouter>
+        </NotificationsProvider>
+      </DialogsProvider>
+    </AuthProvider>
     </ThemeProvider>
   </React.StrictMode>
 );

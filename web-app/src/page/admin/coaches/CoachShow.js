@@ -49,7 +49,7 @@ export default function CoachShow() {
   }, [loadData]);
 
   const handleCoachEdit = React.useCallback(() => {
-    navigate(`/coaches/${coachId}/edit`);
+    navigate(`/admin/coaches/${coachId}/edit`);
   }, [navigate, coachId]);
 
   const handleCoachDelete = React.useCallback(async () => {
@@ -73,7 +73,7 @@ export default function CoachShow() {
         const service = new CoachService();
         await service.delete(Number(coachId));
 
-        navigate('/coaches');
+        navigate('/admin/coaches');
 
         notifications.show('Coach deleted successfully.', {
           severity: 'success',
@@ -93,7 +93,7 @@ export default function CoachShow() {
   }, [coach, dialogs, coachId, navigate, notifications]);
 
   const handleBack = React.useCallback(() => {
-    navigate('/coaches');
+    navigate('/admin/coaches');
   }, [navigate]);
 
   const renderShow = React.useMemo(() => {
@@ -226,7 +226,7 @@ export default function CoachShow() {
     <PageContainer
       title={pageTitle}
       breadcrumbs={[
-        { title: 'Coaches', path: '/coaches' },
+        { title: 'Coaches', path: '/admin/coaches' },
         { title: pageTitle },
       ]}
     >

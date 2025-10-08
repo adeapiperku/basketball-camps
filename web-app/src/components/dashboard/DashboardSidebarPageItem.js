@@ -26,6 +26,7 @@ function DashboardSidebarPageItem({
   selected = false,
   disabled = false,
   nestedNavigation,
+  onClick,
 }) {
   const sidebarContext = React.useContext(DashboardSidebarContext);
   if (!sidebarContext) {
@@ -40,11 +41,18 @@ function DashboardSidebarPageItem({
 
   const [isHovered, setIsHovered] = React.useState(false);
 
-  const handleClick = React.useCallback(() => {
+  const handleClick = React.useCallback((event) => {
+    // If there's a custom onClick handler, call it
+    if (onClick) {
+      event.preventDefault();
+      onClick();
+    }
+    
+    // Call the original onPageItemClick if it exists
     if (onPageItemClick) {
       onPageItemClick(id, !!nestedNavigation);
     }
-  }, [onPageItemClick, id, nestedNavigation]);
+  }, [onPageItemClick, id, nestedNavigation, onClick]);
 
   let nestedNavigationCollapseSx = { display: 'none' };
   if (mini && fullyCollapsed) {

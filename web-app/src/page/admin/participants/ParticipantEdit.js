@@ -89,7 +89,7 @@ function ParticipantEditForm({ initialValues, onSubmit }) {
         autoHideDuration: 3000,
       });
 
-      navigate('/participants');
+      navigate('/admin/participants');
     } catch (editError) {
       notifications.show(`Failed to edit participant. Reason: ${editError.message}`, {
         severity: 'error',
@@ -106,7 +106,7 @@ function ParticipantEditForm({ initialValues, onSubmit }) {
       onSubmit={handleFormSubmit}
       onReset={handleFormReset}
       submitButtonLabel="Save"
-      backButtonPath={`/participants/${participantId}`}
+      backButtonPath={`/admin/participants/${participantId}`}
     />
   );
 }

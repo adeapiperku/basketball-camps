@@ -74,7 +74,7 @@ export default function RegistrationList() {
 
   const handleRowClick = React.useCallback(
     ({ row }) => {
-      navigate(`/registrations/${row.id}`);
+      navigate(`/admin/registrations/${row.id}`);
     },
     [navigate]
   );

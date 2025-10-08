@@ -54,7 +54,7 @@ function SchoolForm(props) {
   }, [formValues, onReset]);
 
   const handleBack = React.useCallback(() => {
-    navigate(backButtonPath ?? '/schools');
+    navigate(backButtonPath ?? '/admin/schools');
   }, [navigate, backButtonPath]);
 
   return (

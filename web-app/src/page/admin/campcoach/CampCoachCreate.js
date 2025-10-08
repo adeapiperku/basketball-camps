@@ -51,7 +51,7 @@ const CampCoachCreate = () => {
       setSuccess(true);
       // Show success message briefly before redirecting
       setTimeout(() => {
-        navigate('/camps');
+        navigate('/admin/camps');
       }, 1500);
     } catch (err) {
       setSubmitError(err.message || "Failed to assign coaches");

@@ -95,7 +95,7 @@ function CampForm(props) {
   }, [formValues, onReset]);
 
   const handleBack = React.useCallback(() => {
-    navigate(backButtonPath ?? '/camps');
+    navigate(backButtonPath ?? '/admin/camps');
   }, [navigate, backButtonPath]);
 
   return (

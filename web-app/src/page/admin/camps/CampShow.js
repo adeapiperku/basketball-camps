@@ -49,7 +49,7 @@ export default function CampShow() {
   }, [loadData]);
 
   const handleCampEdit = React.useCallback(() => {
-    navigate(`/camps/${campId}/edit`);
+    navigate(`/admin/camps/${campId}/edit`);
   }, [navigate, campId]);
 
   const handleCampDelete = React.useCallback(async () => {
@@ -73,7 +73,7 @@ export default function CampShow() {
         const service = new CampService();
         await service.delete(Number(campId));
 
-        navigate('/camps');
+        navigate('/admin/camps');
 
         notifications.show('Camp deleted successfully.', {
           severity: 'success',
@@ -93,7 +93,7 @@ export default function CampShow() {
   }, [camp, dialogs, campId, navigate, notifications]);
 
   const handleBack = React.useCallback(() => {
-    navigate('/camps');
+    navigate('/admin/camps');
   }, [navigate]);
 
   const renderShow = React.useMemo(() => {
@@ -251,7 +251,7 @@ export default function CampShow() {
     <PageContainer
       title={pageTitle}
       breadcrumbs={[
-        { title: 'Camps', path: '/camps' },
+        { title: 'Camps', path: '/admin/camps' },
         { title: pageTitle },
       ]}
     >

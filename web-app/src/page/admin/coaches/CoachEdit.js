@@ -86,7 +86,7 @@ function CoachEditForm({ initialValues, onSubmit }) {
         autoHideDuration: 3000,
       });
 
-      navigate('/coaches');
+      navigate('/admin/coaches');
     } catch (editError) {
       notifications.show(`Failed to edit coach. Reason: ${editError.message}`, {
         severity: 'error',
@@ -103,7 +103,7 @@ function CoachEditForm({ initialValues, onSubmit }) {
       onSubmit={handleFormSubmit}
       onReset={handleFormReset}
       submitButtonLabel="Save"
-      backButtonPath={`/coaches/${coachId}`}
+      backButtonPath={`/admin/coaches/${coachId}`}
     />
   );
 }
@@ -199,8 +199,8 @@ export default function CoachEdit() {
     <PageContainer
       title={`Edit Coach ${coachId}`}
       breadcrumbs={[
-        { title: 'Coaches', path: '/coaches' },
-        { title: `Coach ${coachId}`, path: `/coaches/${coachId}` },
+        { title: 'Coaches', path: '/admin/coaches' },
+        { title: `Coach ${coachId}`, path: `/admin/coaches/${coachId}` },
         { title: 'Edit' },
       ]}
     >

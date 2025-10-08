@@ -1,18 +1,24 @@
-import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 
-export default function PrivateRoute({ children, allowedRoles = [] }) {
-  const { user } = useAuth();
+const PrivateRoute = ({ roles, component: Component }) => {
+  const token = localStorage.getItem('authToken');
 
-  // Not logged in
-  if (!user) {
-    return <Navigate to="/sign-in" replace />;
+  if (!token) {
+    return <Navigate to="/" />;
   }
 
-  // if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
-  //   return <Navigate to="/home" replace />;
-  // }
+  // Decode token to get user role
+  const decodedToken = JSON.parse(atob(token.split('.')[1]));
+  const userRole = decodedToken?.role;
+  if (!roles || !Array.isArray(roles)) {
+    console.error('Roles are undefined or not an array');
+    return <Navigate to="/unauthorized" />;
+  }
+  if (roles.includes(userRole)) {
+    return <Component />;
+  }
 
-  return children;
-}
+  return <Navigate to="/unauthorized" />;
+};
+
+export default PrivateRoute;

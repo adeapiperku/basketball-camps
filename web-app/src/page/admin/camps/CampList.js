@@ -188,18 +188,18 @@ export default function CampList() {
 
   const handleRowClick = React.useCallback(
     ({ row }) => {
-      navigate(`/camps/${row.id}`);
+      navigate(`/admin/camps/${row.id}`);
     },
     [navigate],
   );
 
   const handleCreateClick = React.useCallback(() => {
-    navigate('/camps/new');
+    navigate('/admin/camps/new');
   }, [navigate]);
 
   const handleRowEdit = React.useCallback(
     (camp) => () => {
-      navigate(`/camps/${camp.id}/edit`);
+      navigate(`/admin/camps/${camp.id}/edit`);
     },
     [navigate],
   );

@@ -57,7 +57,7 @@ function CampEditForm({ initialValues, onSubmit }) {
     try {
       await onSubmit(formValues);
       notifications.show('Camp edited successfully.', { severity: 'success', autoHideDuration: 3000 });
-      navigate('/camps');
+      navigate('/admin/camps');
     } catch (error) {
       notifications.show(`Failed to edit camp. Reason: ${error.message}`, { severity: 'error', autoHideDuration: 3000 });
       throw error;
@@ -71,7 +71,7 @@ function CampEditForm({ initialValues, onSubmit }) {
       onSubmit={handleSubmit}
       onReset={handleReset}
       submitButtonLabel="Save"
-      backButtonPath={`/camps/${campId}`}
+      backButtonPath={`/admin/camps/${campId}`}
     />
   );
 }
@@ -135,8 +135,8 @@ export default function CampEdit() {
     <PageContainer
       title={`Edit Camp ${campId}`}
       breadcrumbs={[
-        { title: 'Camps', path: '/camps' },
-        { title: `Camp ${campId}`, path: `/camps/${campId}` },
+        { title: 'Camps', path: '/admin/camps' },
+        { title: `Camp ${campId}`, path: `/admin/camps/${campId}` },
         { title: 'Edit' },
       ]}
     >

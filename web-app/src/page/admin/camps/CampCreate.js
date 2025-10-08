@@ -104,7 +104,7 @@ export default function CampCreate() {
         autoHideDuration: 3000,
       });
 
-      navigate("/camps");
+      navigate("/admin/camps");
     } catch (createError) {
       notifications.show(
         `Failed to create camp. Reason: ${createError.message}`,
@@ -120,7 +120,7 @@ export default function CampCreate() {
   return (
     <PageContainer
       title="New Camp"
-      breadcrumbs={[{ title: "Camps", path: "/camps" }, { title: "New" }]}
+      breadcrumbs={[{ title: "Camps", path: "/admin/camps" }, { title: "New" }]}
     >
       <CampForm
         formState={formState}

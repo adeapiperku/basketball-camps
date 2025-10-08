@@ -140,18 +140,18 @@ export default function SchoolList() {
 
   const handleRowClick = React.useCallback(
     ({ row }) => {
-      navigate(`/schools/${row.id}`);
+      navigate(`/admin/schools/${row.id}`);
     },
     [navigate],
   );
 
   const handleCreateClick = React.useCallback(() => {
-    navigate('/schools/new');
+    navigate('/admin/schools/new');
   }, [navigate]);
 
   const handleRowEdit = React.useCallback(
     (schools) => () => {
-      navigate(`/schools/${schools.id}/edit`);
+      navigate(`/admin/schools/${schools.id}/edit`);
     },
     [navigate],
   );

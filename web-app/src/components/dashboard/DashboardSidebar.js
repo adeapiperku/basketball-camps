@@ -16,12 +16,14 @@ import {
   getDrawerSxTransitionMixin,
   getDrawerWidthTransitionMixin,
 } from '../../mixins';
+import { useNavigate } from 'react-router-dom';
 import DomainIcon from '@mui/icons-material/Domain';
 import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
 import PersonIcon from '@mui/icons-material/Person';
 import SportsBasketballIcon from '@mui/icons-material/SportsBasketball';
 import WorkspacesIcon from '@mui/icons-material/Workspaces';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 function DashboardSidebar({
   expanded = true,
@@ -30,7 +32,7 @@ function DashboardSidebar({
   container,
 }) {
   const theme = useTheme();
-
+  const navigate = useNavigate();
   const { pathname } = useLocation();
 
   const isOverSmViewport = useMediaQuery(theme.breakpoints.up('sm'));
@@ -122,50 +124,60 @@ function DashboardSidebar({
               id="admins"
               title="Admins"
               icon={<AdminPanelSettingsIcon />}
-              href="/admins"
-              selected={!!matchPath('/admins/*', pathname) || pathname === '/'}
+              href="/admin/admins"
+              selected={!!matchPath('/admin/admins/*', pathname) || pathname === '/'}
             />
             <DashboardSidebarPageItem
               id="participants"
               title="Participants"
               icon={<Person2OutlinedIcon />}
-              href="/participants"
-              selected={!!matchPath('/participants/*', pathname) || pathname === '/'}
+              href="/admin/participants"
+              selected={!!matchPath('/admin/participants/*', pathname) || pathname === '/'}
             />
             <DashboardSidebarPageItem
               id="coaches"
               title="Coaches"
               icon={<PersonIcon/>}
-              href="/coaches"
-              selected={!!matchPath('/coaches/*', pathname) || pathname === '/'}
+              href="/admin/coaches"
+              selected={!!matchPath('/admin/coaches/*', pathname) || pathname === '/'}
             />
             <DashboardSidebarPageItem
               id="camps"
               title="Camps"
               icon={<SportsBasketballIcon />}
-              href="/camps"
-              selected={!!matchPath('/camps/*', pathname) || pathname === '/'}
+              href="/admin/camps"
+              selected={!!matchPath('/admin/camps/*', pathname) || pathname === '/'}
             />
             <DashboardSidebarPageItem
               id="camp-coaches"
               title="Camp Coaches"
               icon={<WorkspacesIcon />}
-              href="/camp-coaches"
-              selected={!!matchPath('/camp-coaches/*', pathname) || pathname === '/'}
+              href="/admin/camp-coaches"
+              selected={!!matchPath('/admin/camp-coaches/*', pathname) || pathname === '/'}
             />
             <DashboardSidebarPageItem
               id="registrations"
               title="Registrations"
               icon={<FormatListBulletedIcon />}
-              href="/registrations"
-              selected={!!matchPath('/registrations/*', pathname) || pathname === '/'}
+              href="/admin/registrations"
+              selected={!!matchPath('/admin/registrations/*', pathname) || pathname === '/'}
             />
             <DashboardSidebarPageItem
               id="schools"
               title="Schools"
               icon={<DomainIcon />}
-              href="/schools"
-              selected={!!matchPath('/schools/*', pathname) || pathname === '/'}
+              href="/admin/schools"
+              selected={!!matchPath('/admin/schools/*', pathname) || pathname === '/'}
+            />
+            <DashboardSidebarPageItem
+              id="logout"
+              title="Logout"
+              icon={<ExitToAppIcon />}
+              onClick={() => {
+                localStorage.removeItem("token");
+                localStorage.removeItem("authToken");
+                navigate("/");
+              }}
             />
           </List>
         </Box>

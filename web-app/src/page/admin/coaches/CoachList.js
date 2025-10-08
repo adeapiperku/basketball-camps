@@ -145,18 +145,18 @@ export default function CoachList() {
 
   const handleRowClick = React.useCallback(
     ({ row }) => {
-      navigate(`/coaches/${row.id}`);
+      navigate(`/admin/coaches/${row.id}`);
     },
     [navigate],
   );
 
   const handleCreateClick = React.useCallback(() => {
-    navigate('/coaches/new');
+    navigate('/admin/coaches/new');
   }, [navigate]);
 
   const handleRowEdit = React.useCallback(
     (coach) => () => {
-      navigate(`/coaches/${coach.id}/edit`);
+      navigate(`/admin/coaches/${coach.id}/edit`);
     },
     [navigate],
   );

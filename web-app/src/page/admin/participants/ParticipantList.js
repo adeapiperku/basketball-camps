@@ -147,18 +147,18 @@ export default function ParticipantList() {
 
   const handleRowClick = React.useCallback(
     ({ row }) => {
-      navigate(`/participants/${row.id}`);
+      navigate(`/admin/participants/${row.id}`);
     },
     [navigate],
   );
 
   const handleCreateClick = React.useCallback(() => {
-    navigate('/participants/new');
+    navigate('/admin/participants/new');
   }, [navigate]);
 
   const handleRowEdit = React.useCallback(
     (participants) => () => {
-      navigate(`/participants/${participants.id}/edit`);
+      navigate(`/admin/participants/${participants.id}/edit`);
     },
     [navigate],
   );
