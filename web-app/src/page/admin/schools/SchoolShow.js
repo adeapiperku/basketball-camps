@@ -48,7 +48,7 @@ export default function SchoolShow() {
   }, [loadData]);
 
   const handleSchoolEdit = React.useCallback(() => {
-    navigate(`/schools/${schoolId}/edit`);
+    navigate(`/admin/schools/${schoolId}/edit`);
   }, [navigate, schoolId]);
 
   const handleSchoolDelete = React.useCallback(async () => {
@@ -72,7 +72,7 @@ export default function SchoolShow() {
         const service = new SchoolService();
         await service.delete(Number(schoolId));
 
-        navigate('/schools');
+        navigate('/admin/schools');
 
         notifications.show('School deleted successfully.', {
           severity: 'success',
@@ -92,7 +92,7 @@ export default function SchoolShow() {
   }, [school, dialogs, schoolId, navigate, notifications]);
 
   const handleBack = React.useCallback(() => {
-    navigate('/schools');
+    navigate('/admin/schools');
   }, [navigate]);
 
   const renderShow = React.useMemo(() => {
@@ -177,7 +177,7 @@ export default function SchoolShow() {
     <PageContainer
       title={pageTitle}
       breadcrumbs={[
-        { title: 'Schools', path: '/schools' },
+        { title: 'Schools', path: '/admin/schools' },
         { title: pageTitle },
       ]}
     >

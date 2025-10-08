@@ -77,7 +77,7 @@ function SchoolEditForm({ initialValues, onSubmit }) {
         autoHideDuration: 3000,
       });
 
-      navigate('/schools');
+      navigate('/admin/schools');
     } catch (editError) {
       notifications.show(`Failed to edit school. Reason: ${editError.message}`, {
         severity: 'error',
@@ -94,7 +94,7 @@ function SchoolEditForm({ initialValues, onSubmit }) {
       onSubmit={handleFormSubmit}
       onReset={handleFormReset}
       submitButtonLabel="Save"
-      backButtonPath={`/schools/${schoolId}`}
+      backButtonPath={`/admin/schools/${schoolId}`}
     />
   );
 }
@@ -183,8 +183,8 @@ export default function SchoolEdit() {
     <PageContainer
       title={`Edit School ${schoolId}`}
       breadcrumbs={[
-        { title: 'Schools', path: '/schools' },
-        { title: `School ${schoolId}`, path: `/schools/${schoolId}` },
+        { title: 'Schools', path: '/admin/schools' },
+        { title: `School ${schoolId}`, path: `/admin/schools/${schoolId}` },
         { title: 'Edit' },
       ]}
     >

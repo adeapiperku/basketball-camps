@@ -78,7 +78,7 @@ function CoachForm(props) {
   }, [formValues, onReset]);
 
   const handleBack = React.useCallback(() => {
-    navigate(backButtonPath ?? '/coaches');
+    navigate(backButtonPath ?? '/admin/coaches');
   }, [navigate, backButtonPath]);
 
   return (
@@ -163,12 +163,12 @@ function CoachForm(props) {
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
             <TextField
-              value={formValues.type ?? ''}
+              value={formValues.role ?? ''}
               disabled
-              name="type"
-              label="Type"
-              error={!!formErrors.type}
-              helperText={formErrors.type ?? ' '}
+              name="role"
+              label="Role"
+              error={!!formErrors.role}
+              helperText={formErrors.role ?? ' '}
               fullWidth
             />
           </Grid>
@@ -205,7 +205,7 @@ CoachForm.propTypes = {
       password: PropTypes.string,
       birthDate: PropTypes.string,
       phoneNumber: PropTypes.string,
-      type: PropTypes.string,
+      role: PropTypes.string,
     }).isRequired,
     values: PropTypes.shape({
       id: PropTypes.number,
@@ -215,7 +215,7 @@ CoachForm.propTypes = {
       password: PropTypes.string,
       birthDate: PropTypes.string,
       phoneNumber: PropTypes.string,
-      type: PropTypes.string,
+      role: PropTypes.string,
     }).isRequired,
   }).isRequired,
   onFieldChange: PropTypes.func.isRequired,

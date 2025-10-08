@@ -77,7 +77,7 @@ export default function SchoolCreate() {
         autoHideDuration: 3000,
       });
 
-      navigate('/schools');
+      navigate('/admin/schools');
     } catch (createError) {
       notifications.show(
         `Failed to create schools. Reason: ${createError.message}`,
@@ -93,7 +93,7 @@ export default function SchoolCreate() {
   return (
     <PageContainer
       title="New School"
-      breadcrumbs={[{ title: 'Schools', path: '/schools' }, { title: 'New' }]}
+      breadcrumbs={[{ title: 'Schools', path: '/admin/schools' }, { title: 'New' }]}
     >
       <SchoolForm
         formState={formState}

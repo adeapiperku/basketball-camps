@@ -1,19 +1,8 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import Divider from '@mui/material/Divider';
-import FormLabel from '@mui/material/FormLabel';
-import FormControl from '@mui/material/FormControl';
-import Link from '@mui/material/Link';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
-import MuiCard from '@mui/material/Card';
+import { useState } from 'react';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { loginUser } from '../../service/requests/auth';
+import { Box, Button, CssBaseline, Divider, FormControl, FormLabel, Link, TextField, Typography, Stack, Container, Card as MuiCard } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import Container from '@mui/material/Container';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -57,63 +46,39 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
   },
 }));
 
-export default function SignIn() {
-  const [emailError, setEmailError] = React.useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
-  const [passwordError, setPasswordError] = React.useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
+const SignIn = () => {
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [errorMessage, setErrorMessage] = useState(null);
   const navigate = useNavigate();
-  const { login, user } = useAuth();
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const ok = validateInputs();
-    if (!ok) return;
-
-    const data = new FormData(event.currentTarget);
-    const email = data.get('email');
-    const password = data.get('password');
-    let role = user?.role || 'participant';
-
-    // Simple demo logic for admin
-    if (email === 'admin@gmail.com' && password === 'admin') {
-      role = 'admin';
-    }
-
-    login({ email, role });
-
-    if (role === 'admin') {
-      navigate('/admins', { replace: true });
-    } else {
-      navigate('/home', { replace: true });
-    }
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
-  const validateInputs = () => {
-    const email = document.getElementById('email');
-    const password = document.getElementById('password');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await loginUser(formData);
+      const token = response.token;
 
-    let isValid = true;
+      if (token) {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const decodedPayload = JSON.parse(atob(base64));
+        const role = decodedPayload.role;
 
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-      setEmailError(true);
-      setEmailErrorMessage('Please enter a valid email address.');
-      isValid = false;
-    } else {
-      setEmailError(false);
-      setEmailErrorMessage('');
+        localStorage.setItem('authToken', token);
+        if (role === 'COACH') navigate('/');
+        else if (role === 'PARTICIPANT') navigate('/');
+        else if (role === 'ADMIN') navigate('/admin/');
+        else navigate('/unauthorized');
+      } else {
+        console.log('No token found in response');
+      }
+    } catch (error) {
+      setErrorMessage('Invalid email or password');
     }
-
-    if (!password.value || password.value.length < 5) {
-      setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 5 characters long.');
-      isValid = false;
-    } else {
-      setPasswordError(false);
-      setPasswordErrorMessage('');
-    }
-
-    return isValid;
   };
 
   return (
@@ -133,7 +98,7 @@ export default function SignIn() {
                 fontWeight: 'bold',
               }}
             >
-              Sign in
+              Login
             </Typography>
 
             <Box
@@ -150,14 +115,12 @@ export default function SignIn() {
               <FormControl>
                 <FormLabel htmlFor="email">Email</FormLabel>
                 <TextField
-                  error={emailError}
-                  helperText={emailErrorMessage}
                   id="email"
-                  type="email"
                   name="email"
+                  type="email"
                   placeholder="your@email.com"
-                  autoComplete="email"
-                  autoFocus
+                  value={formData.email}
+                  onChange={handleChange}
                   required
                   fullWidth
                   variant="outlined"
@@ -166,20 +129,18 @@ export default function SignIn() {
                       '& fieldset': { borderColor: 'primary.main' },
                     },
                   }}
-                  color={emailError ? 'error' : 'primary'}
                 />
               </FormControl>
 
               <FormControl>
                 <FormLabel htmlFor="password">Password</FormLabel>
                 <TextField
-                  error={passwordError}
-                  helperText={passwordErrorMessage}
-                  name="password"
-                  placeholder="••••••"
-                  type="password"
                   id="password"
-                  autoComplete="current-password"
+                  name="password"
+                  type="password"
+                  placeholder="••••••"
+                  value={formData.password}
+                  onChange={handleChange}
                   required
                   fullWidth
                   variant="outlined"
@@ -188,9 +149,14 @@ export default function SignIn() {
                       '& fieldset': { borderColor: 'primary.main' },
                     },
                   }}
-                  color={passwordError ? 'error' : 'primary'}
                 />
               </FormControl>
+
+              {errorMessage && (
+                <Typography color="error" sx={{ textAlign: 'center' }}>
+                  {errorMessage}
+                </Typography>
+              )}
 
               <Button
                 type="submit"
@@ -202,7 +168,7 @@ export default function SignIn() {
                   '&:hover': { backgroundColor: 'primary.dark' },
                 }}
               >
-                Sign in
+                Login
               </Button>
             </Box>
 
@@ -213,7 +179,7 @@ export default function SignIn() {
                 Don't have an account?{' '}
                 <Link
                   component={RouterLink}
-                  to="/sign-up"
+                  to="/register"
                   variant="body2"
                   sx={{ color: 'primary.main', fontWeight: 'bold' }}
                 >
@@ -226,4 +192,6 @@ export default function SignIn() {
       </SignInContainer>
     </>
   );
-}
+};
+
+export default SignIn;

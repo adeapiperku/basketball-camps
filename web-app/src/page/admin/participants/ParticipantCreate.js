@@ -96,7 +96,7 @@ export default function ParticipantCreate() {
       await service.create(payload);
 
       notifications.show('Participant created successfully.', { severity: 'success', autoHideDuration: 3000 });
-      navigate('/participants');
+      navigate('/admin/participants');
     } catch (error) {
       notifications.show(`Failed to create participant. Reason: ${error.message}`, { severity: 'error', autoHideDuration: 3000 });
       throw error;
@@ -106,7 +106,7 @@ export default function ParticipantCreate() {
   return (
     <PageContainer
       title="New Participant"
-      breadcrumbs={[{ title: 'Participants', path: '/participants' }, { title: 'New' }]}
+      breadcrumbs={[{ title: 'Participants', path: '/admin/participants' }, { title: 'New' }]}
     >
       <ParticipantForm
         formState={formState}

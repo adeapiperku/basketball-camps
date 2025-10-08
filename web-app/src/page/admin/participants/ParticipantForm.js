@@ -77,7 +77,7 @@ function ParticipantForm(props) {
   }, [formValues, onReset]);
 
   const handleBack = React.useCallback(() => {
-    navigate(backButtonPath ?? '/participants');
+    navigate(backButtonPath ?? '/admin/participants');
   }, [navigate, backButtonPath]);
 
   return (

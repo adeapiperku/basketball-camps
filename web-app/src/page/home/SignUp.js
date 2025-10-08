@@ -1,17 +1,9 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import Divider from '@mui/material/Divider';
-import FormControl from '@mui/material/FormControl';
-import Link from '@mui/material/Link';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
-import MuiCard from '@mui/material/Card';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { registerUser } from '../../service/requests/auth';
+import { Box, Button, CssBaseline, Divider, FormControl, Link, TextField, Typography, Stack, Container, Card as MuiCard } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import Container from '@mui/material/Container';
+import { Link as RouterLink } from 'react-router-dom';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -37,7 +29,7 @@ const compactTextField = {
   "& .MuiOutlinedInput-root": {
     borderRadius: "10px",
     fontSize: "0.9rem",
-    height: "40px", // makes inputs less tall
+    height: "40px",
     backgroundColor: "#fafafa",
     "& input": {
       padding: "10px 12px",
@@ -49,57 +41,47 @@ const compactTextField = {
   },
 };
 
-export default function SignUp() {
-  const navigate = useNavigate();
-  const [errors, setErrors] = React.useState({});
-  const [backendError, setBackendError] = React.useState('');
-
-  const validate = (data) => {
-    const e = {};
-    if (!data.firstName) e.firstName = 'First name is required.';
-    if (!data.lastName) e.lastName = 'Last name is required.';
-    if (!data.email || !/\S+@\S+\.\S+/.test(data.email)) e.email = 'Please enter a valid email.';
-    if (!data.password || data.password.length < 5) e.password = 'Password must be at least 5 characters.';
-    return e;
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setBackendError('');
-    const data = new FormData(event.currentTarget);
-    const payload = {
-      firstName: data.get('firstName')?.trim(),
-      lastName: data.get('lastName')?.trim(),
-      email: data.get('email')?.trim(),
-      password: data.get('password'),
-      birthDate: data.get('birthDate'),
-      phoneNumber: data.get('phoneNumber')?.trim(),
-      emergencyContactPhone: data.get('emergencyContactPhone')?.trim(),
-      type: 'Participant', // always create new users as Participant
-    };
-
-    const e = validate(payload);
-    setErrors(e);
-    if (Object.keys(e).length > 0) return;
-
-    try {
-      const response = await fetch('http://localhost:8080/participants', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Registration failed');
+const SignUp = ({ onRegisterComplete }) => {
+  const formik = useFormik({
+    initialValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      phoneNumber: '',
+      birthDate: '',
+      emergencyContactPhone: '',
+      role: 'PARTICIPANT',
+    },
+    validationSchema: Yup.object({
+      firstName: Yup.string().required('First nameee is required'),
+      lastName: Yup.string().required('Last name is required'),
+      email: Yup.string().email('Invalid email address').required('Email is required'),
+      password: Yup.string().min(5, 'Password must be at least 5 characters').required('Password is required'),
+      phoneNumber: Yup.string().required('Phone number is required'),
+      birthDate: Yup.string()
+        .required('Birth date is required')
+        .matches(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format (YYYY-MM-DD)')
+        .test('valid-date', 'Birth date cannot be in the future', (value) => {
+          if (!value) return false;
+          const today = new Date().toISOString().split('T')[0];
+          return value <= today;
+        }),
+      emergencyContactPhone: Yup.string().required('Emergency phone is required'),
+    }),
+    onSubmit: async (values, { setSubmitting, resetForm }) => {
+      try {
+        const response = await registerUser(values);
+        console.log('Registration successful:', response);
+        resetForm();
+        onRegisterComplete();
+      } catch (error) {
+        console.error('Error during registration:', error);
+      } finally {
+        setSubmitting(false);
       }
-
-      navigate('/sign-in', { replace: true });
-    } catch (error) {
-      console.error(error);
-      setBackendError(error.message);
-    }
-  };
+    },
+  });
 
   return (
     <>
@@ -110,49 +92,149 @@ export default function SignUp() {
             <Typography
               component="h1"
               variant="h4"
-              sx={{ width: '100%', textAlign: 'center',
+              sx={{
+                width: '100%',
+                textAlign: 'center',
                 fontSize: 'clamp(2rem, 6vw, 2.15rem)',
-                color: 'primary.main', fontWeight: 'bold',
-              }}            
+                color: 'primary.main',
+                fontWeight: 'bold',
+              }}
             >
-              Sign up
+              Register
             </Typography>
 
-            {backendError && (
-              <Typography color="error" sx={{ textAlign: 'center' }}>
-                {backendError}
-              </Typography>
-            )}
-
-            <Box component="form" onSubmit={handleSubmit} noValidate sx={{ display: 'flex', flexDirection: 'column', width: '100%', gap: 1.5 }}>
+            <Box
+              component="form"
+              onSubmit={formik.handleSubmit}
+              noValidate
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                width: '100%',
+                gap: 1.5,
+              }}
+            >
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                 <FormControl fullWidth>
-                  <TextField placeholder='First name' sx={compactTextField} id="firstName" name="firstName" autoComplete="given-name" error={!!errors.firstName} helperText={errors.firstName || ' '} required fullWidth />
+                  <TextField
+                    placeholder="First name"
+                    sx={compactTextField}
+                    id="firstName"
+                    name="firstName"
+                    autoComplete="given-name"
+                    value={formik.values.firstName}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.firstName && Boolean(formik.errors.firstName)}
+                    helperText={formik.touched.firstName && formik.errors.firstName ? formik.errors.firstName : ' '}
+                    required
+                    fullWidth
+                  />
                 </FormControl>
                 <FormControl fullWidth>
-                  <TextField placeholder='Last name' sx={compactTextField} id="lastName" name="lastName" autoComplete="family-name" error={!!errors.lastName} helperText={errors.lastName || ' '} required fullWidth />
-                </FormControl>
-              </Stack>
-              <FormControl>
-                <TextField sx={compactTextField} id="email" type="email" name="email" placeholder="your@email.com" autoComplete="email" error={!!errors.email} helperText={errors.email || ' '} required fullWidth variant="outlined" />
-              </FormControl>
-              <FormControl fullWidth>
-                <TextField placeholder='Password' sx={compactTextField} name="password" type="password" id="password" autoComplete="new-password" error={!!errors.password} helperText={errors.password || ' '} required fullWidth />
-              </FormControl>
-              <FormControl fullWidth>
-                  <TextField label="Birth date" sx={compactTextField} id="birthDate" name="birthDate" type="date" InputLabelProps={{ shrink: true }} />
-              </FormControl>
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                <FormControl fullWidth>
-                  <TextField placeholder='Phone number' sx={compactTextField} id="phoneNumber" name="phoneNumber" />
-                </FormControl>
-                <FormControl fullWidth>
-                  <TextField placeholder='Emergency Contact Phone' sx={compactTextField} id="emergencyContactPhone" name="emergencyContactPhone" />
+                  <TextField
+                    placeholder="Last name"
+                    sx={compactTextField}
+                    id="lastName"
+                    name="lastName"
+                    autoComplete="family-name"
+                    value={formik.values.lastName}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.lastName && Boolean(formik.errors.lastName)}
+                    helperText={formik.touched.lastName && formik.errors.lastName ? formik.errors.lastName : ' '}
+                    required
+                    fullWidth
+                  />
                 </FormControl>
               </Stack>
 
-              <Button type="submit" fullWidth variant="contained">
-                Create account
+              <FormControl fullWidth>
+                <TextField
+                  sx={compactTextField}
+                  id="email"
+                  type="email"
+                  name="email"
+                  placeholder="your@email.com"
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.email && Boolean(formik.errors.email)}
+                  helperText={formik.touched.email && formik.errors.email ? formik.errors.email : ' '}
+                  required
+                  fullWidth
+                />
+              </FormControl>
+
+              <FormControl fullWidth>
+                <TextField
+                  placeholder="Password"
+                  sx={compactTextField}
+                  name="password"
+                  type="password"
+                  id="password"
+                  value={formik.values.password}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.password && Boolean(formik.errors.password)}
+                  helperText={formik.touched.password && formik.errors.password ? formik.errors.password : ' '}
+                  required
+                  fullWidth
+                />
+              </FormControl>
+
+              <FormControl fullWidth>
+                <TextField
+                  label="Birth date"
+                  sx={compactTextField}
+                  id="birthDate"
+                  name="birthDate"
+                  type="date"
+                  value={formik.values.birthDate}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  required
+                  error={formik.touched.birthDate && Boolean(formik.errors.birthDate)}
+                  helperText={formik.touched.birthDate && formik.errors.birthDate ? formik.errors.birthDate : ' '}
+                  fullWidth
+                  InputLabelProps={{ shrink: true }}
+                />
+              </FormControl>
+
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                <FormControl fullWidth>
+                  <TextField
+                    placeholder="Phone number"
+                    sx={compactTextField}
+                    id="phoneNumber"
+                    name="phoneNumber"
+                    value={formik.values.phoneNumber}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    required
+                    error={formik.touched.phoneNumber && Boolean(formik.errors.phoneNumber)}
+                    helperText={formik.touched.phoneNumber && formik.errors.phoneNumber ? formik.errors.phoneNumber : ' '}
+                  />
+                </FormControl>
+                <FormControl fullWidth>
+                  <TextField
+                    placeholder="Emergency Contact Phone"
+                    sx={compactTextField}
+                    id="emergencyContactPhone"
+                    name="emergencyContactPhone"
+                    value={formik.values.emergencyContactPhone}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    required
+                    error={formik.touched.emergencyContactPhone && Boolean(formik.errors.emergencyContactPhone)}
+                    helperText={formik.touched.emergencyContactPhone && formik.errors.emergencyContactPhone ? formik.errors.emergencyContactPhone : ' '}
+
+                  />
+                </FormControl>
+              </Stack>
+
+              <Button type="submit" fullWidth variant="contained" disabled={formik.isSubmitting}>
+                Register
               </Button>
             </Box>
 
@@ -161,7 +243,7 @@ export default function SignUp() {
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Typography sx={{ textAlign: 'center' }}>
                 Already have an account?{' '}
-                <Link component={RouterLink} to="/sign-in" variant="body2" sx={{ alignSelf: 'center' }}>
+                <Link component={RouterLink} to="/login" variant="body2" sx={{ alignSelf: 'center' }}>
                   Sign in
                 </Link>
               </Typography>
@@ -171,4 +253,6 @@ export default function SignUp() {
       </SignUpContainer>
     </>
   );
-}
+};
+
+export default SignUp;

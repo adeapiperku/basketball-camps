@@ -83,7 +83,7 @@ export default function Home() {
                       color="primary"
                       fullWidth
                       component={RouterLink}
-                      // to={`/camps/${camp.id}`}
+                      // to={`/camps/${camp.id}/register`}
                       sx={buttonStyles}
                     >
                       Register

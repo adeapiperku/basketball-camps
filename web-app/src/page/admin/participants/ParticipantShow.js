@@ -49,7 +49,7 @@ export default function ParticipantShow() {
   }, [loadData]);
 
   const handleParticipantEdit = React.useCallback(() => {
-    navigate(`/participants/${participantId}/edit`);
+    navigate(`/admin/participants/${participantId}/edit`);
   }, [navigate, participantId]);
 
   const handleParticipantDelete = React.useCallback(async () => {
@@ -73,7 +73,7 @@ export default function ParticipantShow() {
         const service = new ParticipantService();
         await service.delete(Number(participantId));
 
-        navigate('/participants');
+        navigate('/admin/participants');
 
         notifications.show('Participant deleted successfully.', {
           severity: 'success',
@@ -93,7 +93,7 @@ export default function ParticipantShow() {
   }, [participant, dialogs, participantId, navigate, notifications]);
 
   const handleBack = React.useCallback(() => {
-    navigate('/participants');
+    navigate('/admin/participants');
   }, [navigate]);
 
   const renderShow = React.useMemo(() => {
@@ -234,7 +234,7 @@ export default function ParticipantShow() {
     <PageContainer
       title={pageTitle}
       breadcrumbs={[
-        { title: 'Participants', path: '/participants' },
+        { title: 'Participants', path: 'admin/participants' },
         { title: pageTitle },
       ]}
     >
