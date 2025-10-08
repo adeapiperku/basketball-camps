@@ -1,5 +1,6 @@
 package com.basketball_camps.service;
 
+import com.basketball_camps.enums.JerseySize;
 import com.basketball_camps.enums.RegistrationStatus;
 import com.basketball_camps.exception.EntityValidationException;
 import com.basketball_camps.exception.ExceptionPayload;
@@ -30,7 +31,7 @@ public class CampRegistrationService extends BasicServiceOperations<CampRegistra
     }
 
     @Transactional
-    public CampRegistration registerParticipant(Long campId, Long participantId, String specialRequests) {
+    public CampRegistration registerParticipant(Long campId, Long participantId, String specialRequests, JerseySize jerseySize) {
         Camp camp = campService.findById(campId);
         Participant participant = participantService.findById(participantId);
 
@@ -49,6 +50,7 @@ public class CampRegistrationService extends BasicServiceOperations<CampRegistra
         registration.setParticipant(participant);
         registration.setRegisteredAt(LocalDateTime.now());
         registration.setSpecialRequests(specialRequests);
+        registration.setJerseySize(jerseySize);
 
         if (camp.getCurrentParticipants() < camp.getMaxParticipants()) {
             registration.setStatus(RegistrationStatus.CONFIRMED);

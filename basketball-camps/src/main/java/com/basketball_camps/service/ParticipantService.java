@@ -1,5 +1,6 @@
 package com.basketball_camps.service;
 
+import com.basketball_camps.dto.user.RegisterRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +15,12 @@ import jakarta.persistence.EntityNotFoundException;
 public class ParticipantService extends BasicServiceOperations<ParticipantRepository, Participant> {
 
     private final PasswordEncoder passwordEncoder;
+    private final ParticipantRepository participantRepository;
 
-    public ParticipantService(ParticipantRepository repository, PasswordEncoder passwordEncoder) {
+    public ParticipantService(ParticipantRepository repository, PasswordEncoder passwordEncoder, ParticipantRepository participantRepository) {
         super(repository);
         this.passwordEncoder = passwordEncoder;
+        this.participantRepository = participantRepository;
     }
 
     @Override
@@ -72,4 +75,18 @@ public class ParticipantService extends BasicServiceOperations<ParticipantReposi
         return participant;
     }
 
+    public void createParticipant (RegisterRequest request){
+        Participant participant = new Participant();
+        if(request != null) {
+            participant.setEmail(request.getEmail());
+//            participant.setPassword(request.getPassword());
+            participant.setFirstName(request.getFirstName());
+            participant.setLastName(request.getLastName());
+            participant.setPhoneNumber(request.getPhoneNumber());
+            participant.setEmergencyContactPhone(request.getEmergencyContactPhone());
+            participant.setBirthDate(request.getBirthDate());
+
+            participantRepository.save(participant);
+        }
+    }
 }

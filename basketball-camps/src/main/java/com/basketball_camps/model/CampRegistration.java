@@ -1,5 +1,6 @@
 package com.basketball_camps.model;
 
+import com.basketball_camps.enums.JerseySize;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -23,6 +24,10 @@ public class CampRegistration extends BaseEntity {
     @JoinColumn(name = "camp_id", nullable = false)
     private Camp camp;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "school_id", nullable = false)
+    private School school;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private RegistrationStatus status = RegistrationStatus.PENDING;
@@ -39,8 +44,8 @@ public class CampRegistration extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String specialRequests;
 
-    // @Enumerated(EnumType.STRING)
-    // private JerseySize jerseySize;
+     @Enumerated(EnumType.STRING)
+     private JerseySize jerseySize;
 
     public boolean isConfirmed() {
         return status == RegistrationStatus.CONFIRMED;
