@@ -12,10 +12,6 @@ public class Participant extends UserAccount {
     @Column(nullable = false, updatable = false)
     private final String type = "Participant";
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "school_id")
-    private School school;
-
     @Column
     private String emergencyContactPhone;
 

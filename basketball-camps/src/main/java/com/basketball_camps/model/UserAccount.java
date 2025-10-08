@@ -1,5 +1,6 @@
 package com.basketball_camps.model;
 
+import com.basketball_camps.enums.Status;
 import jakarta.persistence.Transient;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -10,6 +11,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -22,6 +26,9 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @MappedSuperclass
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 public class UserAccount extends BaseEntity implements UserDetails {    
     @NotEmpty
     protected String firstName;
@@ -40,6 +47,7 @@ public class UserAccount extends BaseEntity implements UserDetails {
     protected LocalDate birthDate;
 
     protected String phoneNumber;
+    protected Status status;
 
     @JsonIgnore
     @Transient

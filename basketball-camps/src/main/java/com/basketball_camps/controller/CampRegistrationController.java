@@ -31,7 +31,8 @@ public class CampRegistrationController {
         CampRegistration registration = registrationService.registerParticipant(
             request.getCampId(), 
             request.getParticipantId(),
-            request.getSpecialRequests()
+            request.getSpecialRequests(),
+                request.getJerseySize()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(registration);
     }

@@ -1,7 +1,8 @@
 package com.basketball_camps.security.config;
 
+import com.basketball_camps.repository.UserRepository;
 import com.basketball_camps.security.jwt.JwtAuthenticationFilter;
-import com.basketball_camps.service.authentication.UserDetailsServiceImpl;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -25,14 +27,24 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@Log4j2
 public class CustomSecurityConfig {
 
     @Autowired
     private JwtAuthenticationFilter authFilter;
+    @Autowired
+    private  UserRepository userRepository;
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return new UserDetailsServiceImpl();
+        return username -> {
+            log.info("Loading user by username: {}", username);
+            return userRepository.findByEmail(username)
+                    .orElseThrow(() -> {
+                        log.error("User not found: {}", username);
+                        return new UsernameNotFoundException("User not found");
+                    });
+        };
     }
 
     @Bean

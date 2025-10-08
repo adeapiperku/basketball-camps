@@ -1,5 +1,6 @@
 package com.basketball_camps.payload;
 
+import com.basketball_camps.enums.JerseySize;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -12,4 +13,5 @@ public class RegistrationRequest {
     private Long participantId;
     
     private String specialRequests;
+    private JerseySize jerseySize;
 }
