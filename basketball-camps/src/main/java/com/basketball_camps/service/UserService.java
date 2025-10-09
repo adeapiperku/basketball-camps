@@ -56,6 +56,7 @@ public class UserService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(roleRepository.findByName(request.getRole()))
                 .phoneNumber(request.getPhoneNumber())
+                .birthDate(request.getBirthDate())
                 .status(Status.ACTIVE)
                 .build();
 

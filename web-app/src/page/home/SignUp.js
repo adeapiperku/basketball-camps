@@ -3,7 +3,7 @@ import * as Yup from 'yup';
 import { registerUser } from '../../service/requests/auth';
 import { Box, Button, CssBaseline, Divider, FormControl, Link, TextField, Typography, Stack, Container, Card as MuiCard } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { Link as RouterLink } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -42,6 +42,7 @@ const compactTextField = {
 };
 
 const SignUp = ({ onRegisterComplete }) => {
+  const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
       firstName: '',
@@ -74,6 +75,7 @@ const SignUp = ({ onRegisterComplete }) => {
         const response = await registerUser(values);
         console.log('Registration successful:', response);
         resetForm();
+        navigate('/login');
         onRegisterComplete();
       } catch (error) {
         console.error('Error during registration:', error);
