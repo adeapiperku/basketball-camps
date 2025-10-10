@@ -1,5 +1,6 @@
-import { Container, Box, Typography, Button, Grid, Card, CardContent, CardActions, CardMedia, CircularProgress } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { useState } from 'react';
+import { Container, Typography, Button, Box, Grid, Card, CardContent, CardActions, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { useCamps } from '../../hooks/useCamps';
@@ -17,6 +18,17 @@ const formatDate = (dateString) => {
 
 export default function Home() {
   const { camps, loading, error } = useCamps();
+  const navigate = useNavigate();
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleRegisterClick = (campId) => {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      setOpenDialog(true);
+    } else {
+      navigate(`/camps/${campId}/register`);
+    }
+  };
 
   return (
     <>
@@ -33,11 +45,7 @@ export default function Home() {
         </Container>
       </Box>
 
-      <Container
-        maxWidth={false}
-        sx={sectionStyles}
-        disableGutters
-      >
+      <Container maxWidth={false} sx={sectionStyles} disableGutters>
         <Typography variant="h4" component="h2" gutterBottom sx={titleStyles}>
           Available Camps
         </Typography>
@@ -55,13 +63,6 @@ export default function Home() {
             {camps.map((camp) => (
               <Grid item key={camp.id} xs={12} sm={6} md={4}>
                 <Card sx={cardStyles}>
-                  {/* <CardMedia
-                    component="img"
-                    height="180"
-                    image={camp.image || '/basketball-placeholder.jpg'}
-                    alt={camp.name}
-                    sx={{ objectFit: 'cover' }}
-                  /> */}
                   <CardContent sx={cardContentStyles}>
                     <Typography variant="h6" sx={cardTitleStyles}>
                       {camp.name}
@@ -82,8 +83,7 @@ export default function Home() {
                       variant="contained"
                       color="primary"
                       fullWidth
-                      component={RouterLink}
-                      // to={`/camps/${camp.id}/register`}
+                      onClick={() => handleRegisterClick(camp.id)}
                       sx={buttonStyles}
                     >
                       Register
@@ -95,6 +95,28 @@ export default function Home() {
           </Grid>
         )}
       </Container>
+
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+        <DialogTitle>Login Required</DialogTitle>
+        <DialogContent>
+          <Typography>You must log in to register for a camp.</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)} color="secondary">
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              setOpenDialog(false);
+              navigate('/login');
+            }}
+            variant="contained"
+            color="primary"
+          >
+            Go to Login
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Footer />
     </>

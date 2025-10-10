@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Typography, TextField, Button, Box, MenuItem, CircularProgress, Paper } from '@mui/material';
 import { useSchools } from '../../hooks/useSchools';
 import { jwtDecode } from 'jwt-decode';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 
 const JERSEY_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
@@ -64,7 +66,7 @@ export default function CampRegistrationForm() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(registrationData),
       });
@@ -86,94 +88,92 @@ export default function CampRegistrationForm() {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 6 }}>
-      <Paper sx={{ p: 4, borderRadius: 3 }}>
-        <Typography variant="h4" textAlign="center" gutterBottom fontWeight="bold">
-          Camp Registration
-        </Typography>
-
-        {/* Show logged-in user */}
-        {user && (
-          <Typography variant="subtitle1" gutterBottom>
-            Participant: <strong>{user.firstName} {user.lastName}</strong>
+    <>
+      <Header />
+      <Container maxWidth="sm" sx={{ mt: 6 }}>
+        <Paper sx={{ p: 4, borderRadius: 3 }}>
+          <Typography color="primary" variant="h4" textAlign="center" gutterBottom fontWeight="bold">
+            Camp Registration
           </Typography>
-        )}
 
-        {schoolsError && (
-          <Typography color="error" sx={{ mb: 2 }}>
-            Error loading schools: {schoolsError.message}
-          </Typography>
-        )}
-
-        <Box component="form" onSubmit={handleSubmit}>
-          {/* School selection */}
-          <TextField
-            select
-            fullWidth
-            required
-            margin="normal"
-            label="Select School"
-            value={selectedSchool}
-            onChange={(e) => setSelectedSchool(e.target.value)}
-          >
-            {loadingSchools ? (
-              <MenuItem disabled>Loading...</MenuItem>
-            ) : (
-              schools.map((school) => (
-                <MenuItem key={school.id} value={school.id}>
-                  {school.name}
-                </MenuItem>
-              ))
-            )}
-          </TextField>
-
-          {/* Jersey size selection */}
-          <TextField
-            select
-            fullWidth
-            required
-            margin="normal"
-            label="Jersey Size"
-            value={jerseySize}
-            onChange={(e) => setJerseySize(e.target.value)}
-          >
-            {JERSEY_SIZES.map((size) => (
-              <MenuItem key={size} value={size}>
-                {size}
-              </MenuItem>
-            ))}
-          </TextField>
-
-          {/* Special requests */}
-          <TextField
-            label="Special Requests"
-            fullWidth
-            multiline
-            rows={3}
-            margin="normal"
-            value={specialRequests}
-            onChange={(e) => setSpecialRequests(e.target.value)}
-          />
-
-          {/* Submit button */}
-          <Box textAlign="center" mt={3}>
-            <Button type="submit" variant="contained" color="primary" disabled={submitting}>
-              {submitting ? <CircularProgress size={24} /> : 'Register'}
-            </Button>
-          </Box>
-
-          {/* Feedback message */}
-          {message && (
-            <Typography
-              mt={2}
-              textAlign="center"
-              color={message.includes('successful') ? 'green' : 'red'}
-            >
-              {message}
+          {user && (
+            <Typography variant="subtitle1" gutterBottom>
+              Participant: <strong>{user.firstName} {user.lastName}</strong>
             </Typography>
           )}
-        </Box>
-      </Paper>
-    </Container>
+
+          {schoolsError && (
+            <Typography color="error" sx={{ mb: 2 }}>
+              Error loading schools: {schoolsError.message}
+            </Typography>
+          )}
+
+          <Box component="form" onSubmit={handleSubmit}>
+            <TextField
+              select
+              fullWidth
+              required
+              margin="normal"
+              label="Select School"
+              value={selectedSchool}
+              onChange={(e) => setSelectedSchool(e.target.value)}
+            >
+              {loadingSchools ? (
+                <MenuItem disabled>Loading...</MenuItem>
+              ) : (
+                schools.map((school) => (
+                  <MenuItem key={school.id} value={school.id}>
+                    {school.name}
+                  </MenuItem>
+                ))
+              )}
+            </TextField>
+
+            <TextField
+              select
+              fullWidth
+              required
+              margin="normal"
+              label="Jersey Size"
+              value={jerseySize}
+              onChange={(e) => setJerseySize(e.target.value)}
+            >
+              {JERSEY_SIZES.map((size) => (
+                <MenuItem key={size} value={size}>
+                  {size}
+                </MenuItem>
+              ))}
+            </TextField>
+
+            <TextField
+              label="Special Requests"
+              fullWidth
+              multiline
+              rows={3}
+              margin="normal"
+              value={specialRequests}
+              onChange={(e) => setSpecialRequests(e.target.value)}
+            />
+
+            <Box textAlign="center" mt={3}>
+              <Button type="submit" variant="contained" color="primary" disabled={submitting}>
+                {submitting ? <CircularProgress size={24} /> : 'Register'}
+              </Button>
+            </Box>
+
+            {message && (
+              <Typography
+                mt={2}
+                textAlign="center"
+                color={message.includes('successful') ? 'green' : 'red'}
+              >
+                {message}
+              </Typography>
+            )}
+          </Box>
+        </Paper>
+      </Container>
+      <Footer />
+    </>
   );
 }
