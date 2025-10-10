@@ -1,65 +1,75 @@
 import { useState } from 'react';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 import { loginUser } from '../../service/requests/auth';
-import { Box, Button, CssBaseline, Divider, FormControl, FormLabel, Link, TextField, Typography, Stack, Container, Card as MuiCard } from '@mui/material';
+import {
+  Box,
+  Button,
+  CssBaseline,
+  Divider,
+  FormControl,
+  Link,
+  TextField,
+  Typography,
+  Stack,
+  Container,
+  Card as MuiCard,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   alignSelf: 'center',
   width: '100%',
+  maxWidth: '450px',
   padding: theme.spacing(4),
-  gap: theme.spacing(2),
+  gap: theme.spacing(2.5),
   margin: 'auto',
-  [theme.breakpoints.up('sm')]: {
-    maxWidth: '450px',
-  },
+  borderRadius: '12px',
   boxShadow:
     'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
-  ...theme.applyStyles('dark', {
-    boxShadow:
-      'hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px',
-  }),
 }));
 
 const SignInContainer = styled(Stack)(({ theme }) => ({
   height: 'calc((1 - var(--template-frame-height, 0)) * 100dvh)',
   minHeight: '100%',
   padding: theme.spacing(2),
-  [theme.breakpoints.up('sm')]: {
-    padding: theme.spacing(4),
-  },
-  '&::before': {
-    content: '""',
-    display: 'block',
-    position: 'absolute',
-    zIndex: -1,
-    inset: 0,
-    backgroundImage:
-      'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
-    backgroundRepeat: 'no-repeat',
-    ...theme.applyStyles('dark', {
-      backgroundImage:
-        'radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))',
-    }),
-  },
+  justifyContent: 'center',
+  [theme.breakpoints.up('sm')]: { padding: theme.spacing(4) },
 }));
 
-const SignIn = () => {
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const [errorMessage, setErrorMessage] = useState(null);
+const compactTextField = {
+  "& .MuiOutlinedInput-root": {
+    borderRadius: "10px",
+    fontSize: "0.9rem",
+    height: "42px",
+    backgroundColor: "#fafafa",
+    "& input": { padding: "12px" },
+    "&:hover fieldset": { borderColor: "#1976d2" },
+    "&.Mui-focused fieldset": {
+      borderColor: "#1976d2",
+      boxShadow: "0 0 0 3px rgba(25, 118, 210, 0.15)",
+    },
+  },
+};
+
+export default function SignIn() {
   const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    defaultValues: { email: '', password: '' },
+  });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const onSubmit = async (data) => {
+    setErrorMessage('');
     try {
-      const response = await loginUser(formData);
+      const response = await loginUser(data);
       const token = response.token;
 
       if (token) {
@@ -77,15 +87,16 @@ const SignIn = () => {
         console.log('No token found in response');
       }
     } catch (error) {
-      setErrorMessage('Invalid email or password');
+      setErrorMessage('User not found or invalid credentials');
+      console.error(error);
     }
   };
 
   return (
     <>
       <CssBaseline enableColorScheme />
-      <SignInContainer direction="column" justifyContent="space-between">
-        <Container maxWidth="sm" sx={{ px: { xs: 2, sm: 3 } }}>
+      <SignInContainer direction="column" justifyContent="center">
+        <Container maxWidth="sm" sx={{ px: { xs: 2, sm: 3 }, display: 'flex', justifyContent: 'center' }}>
           <Card variant="outlined">
             <Typography
               component="h1"
@@ -98,62 +109,45 @@ const SignIn = () => {
                 fontWeight: 'bold',
               }}
             >
-              Login
+              Sign In
             </Typography>
 
             <Box
               component="form"
-              onSubmit={handleSubmit}
+              onSubmit={handleSubmit(onSubmit)}
               noValidate
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                width: '100%',
-                gap: 2,
-              }}
+              sx={{ display: 'flex', flexDirection: 'column', width: '100%', gap: 2 }}
             >
-              <FormControl>
-                <FormLabel htmlFor="email">Email</FormLabel>
+              <FormControl fullWidth>
                 <TextField
-                  id="email"
-                  name="email"
-                  type="email"
                   placeholder="your@email.com"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  fullWidth
-                  variant="outlined"
-                  sx={{
-                    '& .MuiOutlinedInput-root.Mui-focused': {
-                      '& fieldset': { borderColor: 'primary.main' },
-                    },
-                  }}
+                  sx={compactTextField}
+                  type="email"
+                  {...register('email', {
+                    required: 'Email is required',
+                    pattern: { value: /^\S+@\S+$/, message: 'Invalid email' },
+                  })}
+                  error={!!errors.email}
+                  helperText={errors.email?.message || ' '}
                 />
               </FormControl>
 
-              <FormControl>
-                <FormLabel htmlFor="password">Password</FormLabel>
+              <FormControl fullWidth>
                 <TextField
-                  id="password"
-                  name="password"
+                  placeholder="Password"
+                  sx={compactTextField}
                   type="password"
-                  placeholder="••••••"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  fullWidth
-                  variant="outlined"
-                  sx={{
-                    '& .MuiOutlinedInput-root.Mui-focused': {
-                      '& fieldset': { borderColor: 'primary.main' },
-                    },
-                  }}
+                  {...register('password', { required: 'Password is required' })}
+                  error={!!errors.password}
+                  helperText={errors.password?.message || ' '}
                 />
               </FormControl>
 
               {errorMessage && (
-                <Typography color="error" sx={{ textAlign: 'center' }}>
+                <Typography
+                  color="error"
+                  sx={{ fontSize: '0.85rem', textAlign: 'center', minHeight: '1.2em'}}
+                >
                   {errorMessage}
                 </Typography>
               )}
@@ -162,13 +156,17 @@ const SignIn = () => {
                 type="submit"
                 fullWidth
                 variant="contained"
+                disabled={isSubmitting}
                 sx={{
+                  height: '45px',
+                  borderRadius: '10px',
+                  fontWeight: 'bold',
+                  fontSize: '0.95rem',
                   backgroundColor: 'primary.main',
-                  color: 'white',
                   '&:hover': { backgroundColor: 'primary.dark' },
                 }}
               >
-                Login
+                Sign In
               </Button>
             </Box>
 
@@ -177,12 +175,7 @@ const SignIn = () => {
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Typography sx={{ textAlign: 'center' }}>
                 Don't have an account?{' '}
-                <Link
-                  component={RouterLink}
-                  to="/register"
-                  variant="body2"
-                  sx={{ color: 'primary.main', fontWeight: 'bold' }}
-                >
+                <Link component={RouterLink} to="/register" variant="body2" sx={{ alignSelf: 'center' }}>
                   Sign up
                 </Link>
               </Typography>
@@ -192,6 +185,4 @@ const SignIn = () => {
       </SignInContainer>
     </>
   );
-};
-
-export default SignIn;
+}

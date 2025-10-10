@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router';
 import useNotifications from '../../../hooks/useNotifications/useNotifications';
-import { CoachService } from '../../../service/CoachService';
+import { registerUser } from '../../../service/requests/auth';
 import CoachForm from './CoachForm';
 import PageContainer from '../../../components/PageContainer';
 
@@ -9,9 +9,9 @@ const INITIAL_FORM_VALUES = {
   firstName: '',
   lastName: '',
   email: '',
+  password: '',
   phoneNumber: '',
   birthDate: '',
-  password: '',
   role: 'COACH',
 };
 
@@ -19,87 +19,83 @@ export default function CoachCreate() {
   const navigate = useNavigate();
   const notifications = useNotifications();
 
-  const [formState, setFormState] = React.useState(() => ({
+  const [formState, setFormState] = React.useState({
     values: INITIAL_FORM_VALUES,
     errors: {},
-  }));
-
-  const formValues = formState.values;
-  const formErrors = formState.errors;
-
-  const setFormValues = React.useCallback((newFormValues) => {
-    setFormState((previousState) => ({
-      ...previousState,
-      values: newFormValues,
-    }));
-  }, []);
-
-  const setFormErrors = React.useCallback((newFormErrors) => {
-    setFormState((previousState) => ({
-      ...previousState,
-      errors: newFormErrors,
-    }));
-  }, []);
-
-  const handleFormFieldChange = React.useCallback(
-    (name, value) => {
-      const validateField = (values) => {
-        const issues = [];
-        if (!values.firstName) issues.push({ path: ['firstName'], message: 'First name is required' });
-        if (!values.lastName) issues.push({ path: ['lastName'], message: 'Last name is required' });
-        if (!values.email) issues.push({ path: ['email'], message: 'Email is required' });
-        if (!values.password) issues.push({ path: ['password'], message: 'Password is required' });
-        if (!values.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
-        if (!values.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
-        if (!values.role) issues.push({ path: ['role'], message: 'Role is required' });
-        setFormErrors({
-          ...formErrors,
-          [name]: issues?.find((issue) => issue.path?.[0] === name)?.message,
-        });
-      };
-
-      const newFormValues = { ...formValues, [name]: value };
-      setFormValues(newFormValues);
-      validateField(newFormValues);
-    },
-    [formValues, formErrors, setFormErrors, setFormValues],
+  });
+  const { values, errors } = formState;
+  const setFormValues = React.useCallback(
+    (newValues) => setFormState((prev) => ({ ...prev, values: newValues })),
+    []
   );
 
-  const handleFormReset = React.useCallback(() => {
-    setFormValues(INITIAL_FORM_VALUES);
-  }, [setFormValues]);
+  const setFormErrors = React.useCallback(
+    (newErrors) => setFormState((prev) => ({ ...prev, errors: newErrors })),
+    []
+  );
 
-  const handleFormSubmit = React.useCallback(async () => {
-    const issues = [];
-    if (!formValues.firstName) issues.push({ path: ['firstName'], message: 'First name is required' });
-    if (!formValues.lastName) issues.push({ path: ['lastName'], message: 'Last name is required' });
-    if (!formValues.email) issues.push({ path: ['email'], message: 'Email is required' });
-    if (!formValues.password) issues.push({ path: ['password'], message: 'Password is required' });
-    if (!formValues.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
-    if (!formValues.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
-    if (!formValues.role) issues.push({ path: ['role'], message: 'Role is required' });
-    if (issues && issues.length > 0) {
-      setFormErrors(Object.fromEntries(issues.map((issue) => [issue.path?.[0], issue.message])));
+  const handleFieldChange = React.useCallback(
+    (name, value) => {
+      const newValues = { ...values, [name]: value };
+      setFormValues(newValues);
+      const newErrors = { ...errors };
+
+      if (!value) {
+        newErrors[name] = `${name.charAt(0).toUpperCase() + name.slice(1)} is required`;
+      } else {
+        delete newErrors[name];
+      }
+
+      if (name === 'email' && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        newErrors.email = 'Invalid email address';
+      }
+
+      if (name === 'password' && value.length < 5) {
+        newErrors.password = 'Password must be at least 5 characters';
+      }
+
+      if (name === 'birthDate') {
+        const today = new Date().toISOString().split('T')[0];
+        if (value > today) newErrors.birthDate = 'Birth date cannot be in the future';
+      }
+
+      setFormErrors(newErrors);
+    },
+    [values, errors, setFormValues, setFormErrors]
+  );
+
+  const handleReset = React.useCallback(() => {
+    setFormValues(INITIAL_FORM_VALUES);
+    setFormErrors({});
+  }, [setFormValues, setFormErrors]);
+
+  const handleSubmit = React.useCallback(async () => {
+    const newErrors = {};
+    Object.entries(values).forEach(([key, val]) => {
+      if (!val && key !== 'role') {
+        newErrors[key] = `${key.charAt(0).toUpperCase() + key.slice(1)} is required`;
+      }
+    });
+
+    if (Object.keys(newErrors).length > 0) {
+      setFormErrors(newErrors);
       return;
     }
-    setFormErrors({});
 
     try {
-      const service = new CoachService();
-      await service.create(formValues);
+      await registerUser(values);
       notifications.show('Coach created successfully.', {
         severity: 'success',
         autoHideDuration: 3000,
       });
       navigate('/admin/coaches');
-    } catch (createError) {
-      notifications.show(`Failed to create coach. Reason: ${createError.message}`, {
+    } catch (error) {
+      notifications.show(`Failed to create coach. Reason: ${error.message}`, {
         severity: 'error',
         autoHideDuration: 3000,
       });
-      throw createError;
     }
-  }, [formValues, navigate, notifications, setFormErrors]);
+  }, [values, navigate, notifications, setFormErrors]);
 
   return (
     <PageContainer
@@ -108,9 +104,9 @@ export default function CoachCreate() {
     >
       <CoachForm
         formState={formState}
-        onFieldChange={handleFormFieldChange}
-        onSubmit={handleFormSubmit}
-        onReset={handleFormReset}
+        onFieldChange={handleFieldChange}
+        onSubmit={handleSubmit}
+        onReset={handleReset}
         submitButtonLabel="Create"
       />
     </PageContainer>

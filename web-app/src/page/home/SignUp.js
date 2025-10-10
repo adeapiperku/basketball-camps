@@ -1,5 +1,4 @@
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
+import { useForm } from 'react-hook-form';
 import { registerUser } from '../../service/requests/auth';
 import { Box, Button, CssBaseline, Divider, FormControl, Link, TextField, Typography, Stack, Container, Card as MuiCard } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -41,10 +40,16 @@ const compactTextField = {
   },
 };
 
-const SignUp = ({ onRegisterComplete }) => {
+export default function SignUp({ onRegisterComplete }) {
   const navigate = useNavigate();
-  const formik = useFormik({
-    initialValues: {
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    defaultValues: {
       firstName: '',
       lastName: '',
       email: '',
@@ -54,36 +59,18 @@ const SignUp = ({ onRegisterComplete }) => {
       emergencyContactPhone: '',
       role: 'PARTICIPANT',
     },
-    validationSchema: Yup.object({
-      firstName: Yup.string().required('First nameee is required'),
-      lastName: Yup.string().required('Last name is required'),
-      email: Yup.string().email('Invalid email address').required('Email is required'),
-      password: Yup.string().min(5, 'Password must be at least 5 characters').required('Password is required'),
-      phoneNumber: Yup.string().required('Phone number is required'),
-      birthDate: Yup.string()
-        .required('Birth date is required')
-        .matches(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format (YYYY-MM-DD)')
-        .test('valid-date', 'Birth date cannot be in the future', (value) => {
-          if (!value) return false;
-          const today = new Date().toISOString().split('T')[0];
-          return value <= today;
-        }),
-      emergencyContactPhone: Yup.string().required('Emergency phone is required'),
-    }),
-    onSubmit: async (values, { setSubmitting, resetForm }) => {
-      try {
-        const response = await registerUser(values);
-        console.log('Registration successful:', response);
-        resetForm();
-        navigate('/login');
-        onRegisterComplete();
-      } catch (error) {
-        console.error('Error during registration:', error);
-      } finally {
-        setSubmitting(false);
-      }
-    },
   });
+
+  const onSubmit = async (data) => {
+    try {
+      await registerUser(data);
+      reset();
+      navigate('/login');
+      if (onRegisterComplete) onRegisterComplete();
+    } catch (error) {
+      console.error('Error during registration:', error);
+    }
+  };
 
   return (
     <>
@@ -107,7 +94,7 @@ const SignUp = ({ onRegisterComplete }) => {
 
             <Box
               component="form"
-              onSubmit={formik.handleSubmit}
+              onSubmit={handleSubmit(onSubmit)}
               noValidate
               sx={{
                 display: 'flex',
@@ -121,50 +108,33 @@ const SignUp = ({ onRegisterComplete }) => {
                   <TextField
                     placeholder="First name"
                     sx={compactTextField}
-                    id="firstName"
-                    name="firstName"
-                    autoComplete="given-name"
-                    value={formik.values.firstName}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    error={formik.touched.firstName && Boolean(formik.errors.firstName)}
-                    helperText={formik.touched.firstName && formik.errors.firstName ? formik.errors.firstName : ' '}
-                    required
-                    fullWidth
+                    {...register('firstName', { required: 'First name is required' })}
+                    error={!!errors.firstName}
+                    helperText={errors.firstName?.message || ' '}
                   />
                 </FormControl>
                 <FormControl fullWidth>
                   <TextField
                     placeholder="Last name"
                     sx={compactTextField}
-                    id="lastName"
-                    name="lastName"
-                    autoComplete="family-name"
-                    value={formik.values.lastName}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    error={formik.touched.lastName && Boolean(formik.errors.lastName)}
-                    helperText={formik.touched.lastName && formik.errors.lastName ? formik.errors.lastName : ' '}
-                    required
-                    fullWidth
+                    {...register('lastName', { required: 'Last name is required' })}
+                    error={!!errors.lastName}
+                    helperText={errors.lastName?.message || ' '}
                   />
                 </FormControl>
               </Stack>
 
               <FormControl fullWidth>
                 <TextField
-                  sx={compactTextField}
-                  id="email"
-                  type="email"
-                  name="email"
                   placeholder="your@email.com"
-                  value={formik.values.email}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.email && Boolean(formik.errors.email)}
-                  helperText={formik.touched.email && formik.errors.email ? formik.errors.email : ' '}
-                  required
-                  fullWidth
+                  sx={compactTextField}
+                  type="email"
+                  {...register('email', {
+                    required: 'Email is required',
+                    pattern: { value: /^\S+@\S+$/, message: 'Invalid email address' },
+                  })}
+                  error={!!errors.email}
+                  helperText={errors.email?.message || ' '}
                 />
               </FormControl>
 
@@ -172,16 +142,13 @@ const SignUp = ({ onRegisterComplete }) => {
                 <TextField
                   placeholder="Password"
                   sx={compactTextField}
-                  name="password"
                   type="password"
-                  id="password"
-                  value={formik.values.password}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.password && Boolean(formik.errors.password)}
-                  helperText={formik.touched.password && formik.errors.password ? formik.errors.password : ' '}
-                  required
-                  fullWidth
+                  {...register('password', {
+                    required: 'Password is required',
+                    minLength: { value: 5, message: 'At least 5 characters' },
+                  })}
+                  error={!!errors.password}
+                  helperText={errors.password?.message || ' '}
                 />
               </FormControl>
 
@@ -189,17 +156,17 @@ const SignUp = ({ onRegisterComplete }) => {
                 <TextField
                   label="Birth date"
                   sx={compactTextField}
-                  id="birthDate"
-                  name="birthDate"
                   type="date"
-                  value={formik.values.birthDate}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  required
-                  error={formik.touched.birthDate && Boolean(formik.errors.birthDate)}
-                  helperText={formik.touched.birthDate && formik.errors.birthDate ? formik.errors.birthDate : ' '}
-                  fullWidth
                   InputLabelProps={{ shrink: true }}
+                  {...register('birthDate', {
+                    required: 'Birth date is required',
+                    validate: (value) => {
+                      const today = new Date().toISOString().split('T')[0];
+                      return value <= today || 'Birth date cannot be in the future';
+                    },
+                  })}
+                  error={!!errors.birthDate}
+                  helperText={errors.birthDate?.message || ' '}
                 />
               </FormControl>
 
@@ -208,34 +175,25 @@ const SignUp = ({ onRegisterComplete }) => {
                   <TextField
                     placeholder="Phone number"
                     sx={compactTextField}
-                    id="phoneNumber"
-                    name="phoneNumber"
-                    value={formik.values.phoneNumber}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    required
-                    error={formik.touched.phoneNumber && Boolean(formik.errors.phoneNumber)}
-                    helperText={formik.touched.phoneNumber && formik.errors.phoneNumber ? formik.errors.phoneNumber : ' '}
+                    {...register('phoneNumber', { required: 'Phone number is required' })}
+                    error={!!errors.phoneNumber}
+                    helperText={errors.phoneNumber?.message || ' '}
                   />
                 </FormControl>
                 <FormControl fullWidth>
                   <TextField
                     placeholder="Emergency Contact Phone"
                     sx={compactTextField}
-                    id="emergencyContactPhone"
-                    name="emergencyContactPhone"
-                    value={formik.values.emergencyContactPhone}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    required
-                    error={formik.touched.emergencyContactPhone && Boolean(formik.errors.emergencyContactPhone)}
-                    helperText={formik.touched.emergencyContactPhone && formik.errors.emergencyContactPhone ? formik.errors.emergencyContactPhone : ' '}
-
+                    {...register('emergencyContactPhone', {
+                      required: 'Emergency phone is required',
+                    })}
+                    error={!!errors.emergencyContactPhone}
+                    helperText={errors.emergencyContactPhone?.message || ' '}
                   />
                 </FormControl>
               </Stack>
 
-              <Button type="submit" fullWidth variant="contained" disabled={formik.isSubmitting}>
+              <Button type="submit" fullWidth variant="contained" disabled={isSubmitting}>
                 Register
               </Button>
             </Box>
@@ -255,6 +213,4 @@ const SignUp = ({ onRegisterComplete }) => {
       </SignUpContainer>
     </>
   );
-};
-
-export default SignUp;
+}
