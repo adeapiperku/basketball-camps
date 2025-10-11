@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { loginUser } from '../../service/requests/auth';
 import {
   Box,
@@ -7,15 +7,14 @@ import {
   CssBaseline,
   Divider,
   FormControl,
-  Link,
   TextField,
   Typography,
   Stack,
   Container,
+  Link,
   Card as MuiCard,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -26,7 +25,7 @@ const Card = styled(MuiCard)(({ theme }) => ({
   padding: theme.spacing(4),
   gap: theme.spacing(2.5),
   margin: 'auto',
-  borderRadius: '12px',
+  [theme.breakpoints.up('sm')]: { maxWidth: '400px' },
   boxShadow:
     'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
 }));
@@ -43,33 +42,34 @@ const compactTextField = {
   "& .MuiOutlinedInput-root": {
     borderRadius: "10px",
     fontSize: "0.9rem",
-    height: "42px",
+    height: "40px",
     backgroundColor: "#fafafa",
-    "& input": { padding: "12px" },
-    "&:hover fieldset": { borderColor: "#1976d2" },
+    "& input": {
+      padding: "10px 12px",
+    },
     "&.Mui-focused fieldset": {
       borderColor: "#1976d2",
-      boxShadow: "0 0 0 3px rgba(25, 118, 210, 0.15)",
+      boxShadow: "0 0 0 2px rgba(25, 118, 210, 0.15)",
     },
   },
 };
 
 export default function SignIn() {
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [errorMessage, setErrorMessage] = useState(null);
   const navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState('');
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm({
-    defaultValues: { email: '', password: '' },
-  });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
-  const onSubmit = async (data) => {
-    setErrorMessage('');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMessage(null);
+
     try {
-      const response = await loginUser(data);
+      const response = await loginUser(formData);
       const token = response.token;
 
       if (token) {
@@ -79,24 +79,27 @@ export default function SignIn() {
         const role = decodedPayload.role;
 
         localStorage.setItem('authToken', token);
-        if (role === 'COACH') navigate('/');
-        else if (role === 'PARTICIPANT') navigate('/');
-        else if (role === 'ADMIN') navigate('/admin/');
-        else navigate('/unauthorized');
+
+        if (role === 'ADMIN') {
+          navigate('/admin');
+        } else if (role === 'COACH' || role === 'PARTICIPANT') {
+          navigate('/');
+        } else {
+          navigate('/unauthorized');
+        }
       } else {
-        console.log('No token found in response');
+        setErrorMessage('Unexpected login error. Please try again.');
       }
     } catch (error) {
-      setErrorMessage('User not found or invalid credentials');
-      console.error(error);
+      setErrorMessage('Invalid email or password.');
     }
   };
 
   return (
     <>
       <CssBaseline enableColorScheme />
-      <SignInContainer direction="column" justifyContent="center">
-        <Container maxWidth="sm" sx={{ px: { xs: 2, sm: 3 }, display: 'flex', justifyContent: 'center' }}>
+      <SignInContainer direction="column" justifyContent="space-between">
+        <Container maxWidth="sm" sx={{ px: { xs: 2, sm: 3 } }}>
           <Card variant="outlined">
             <Typography
               component="h1"
@@ -114,69 +117,57 @@ export default function SignIn() {
 
             <Box
               component="form"
-              onSubmit={handleSubmit(onSubmit)}
+              onSubmit={handleSubmit}
               noValidate
-              sx={{ display: 'flex', flexDirection: 'column', width: '100%', gap: 2 }}
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                width: '100%',
+                gap: 1.5,
+              }}
             >
               <FormControl fullWidth>
                 <TextField
-                  placeholder="your@email.com"
-                  sx={compactTextField}
+                  placeholder="Email"
                   type="email"
-                  {...register('email', {
-                    required: 'Email is required',
-                    pattern: { value: /^\S+@\S+$/, message: 'Invalid email' },
-                  })}
-                  error={!!errors.email}
-                  helperText={errors.email?.message || ' '}
+                  name="email"
+                  sx={compactTextField}
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
                 />
               </FormControl>
 
               <FormControl fullWidth>
                 <TextField
                   placeholder="Password"
-                  sx={compactTextField}
                   type="password"
-                  {...register('password', { required: 'Password is required' })}
-                  error={!!errors.password}
-                  helperText={errors.password?.message || ' '}
+                  name="password"
+                  sx={compactTextField}
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
                 />
               </FormControl>
 
               {errorMessage && (
-                <Typography
-                  color="error"
-                  sx={{ fontSize: '0.85rem', textAlign: 'center', minHeight: '1.2em'}}
-                >
+                <Typography color="error" sx={{ textAlign: 'center', fontSize: '0.9rem' }}>
                   {errorMessage}
                 </Typography>
               )}
 
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                disabled={isSubmitting}
-                sx={{
-                  height: '45px',
-                  borderRadius: '10px',
-                  fontWeight: 'bold',
-                  fontSize: '0.95rem',
-                  backgroundColor: 'primary.main',
-                  '&:hover': { backgroundColor: 'primary.dark' },
-                }}
-              >
+              <Button type="submit" fullWidth variant="contained">
                 Sign In
               </Button>
             </Box>
 
-            <Divider sx={{ my: 2 }}>or</Divider>
+            <Divider>or</Divider>
 
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Typography sx={{ textAlign: 'center' }}>
-                Don't have an account?{' '}
+                Don’t have an account?{' '}
                 <Link component={RouterLink} to="/register" variant="body2" sx={{ alignSelf: 'center' }}>
-                  Sign up
+                  Register
                 </Link>
               </Typography>
             </Box>
