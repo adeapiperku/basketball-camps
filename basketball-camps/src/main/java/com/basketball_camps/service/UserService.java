@@ -5,6 +5,7 @@ import com.basketball_camps.dto.user.AuthenticationResponse;
 import com.basketball_camps.dto.user.RegisterRequest;
 import com.basketball_camps.enums.Status;
 import com.basketball_camps.exception.UserAlreadyExistsException;
+import com.basketball_camps.model.User;
 import com.basketball_camps.repository.RoleRepository;
 import com.basketball_camps.repository.UserRepository;
 import com.basketball_camps.security.jwt.JwtService;
@@ -29,11 +30,15 @@ public class UserService {
     private final ParticipantService participantService;
     private final CoachService coachService;
 
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+    }
+
     public AuthenticationResponse authentication(AuthenticationRequest request) {
 
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
         var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
 
@@ -42,7 +47,7 @@ public class UserService {
         return AuthenticationResponse.builder().token(jwtToken).userId(user.getId()).build();
     }
 
-    public AuthenticationResponse createUser(RegisterRequest request) throws  IOException {
+    public AuthenticationResponse createUser(RegisterRequest request) throws IOException {
         validateRegisterRequest(request);
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -62,10 +67,10 @@ public class UserService {
 
         userRepository.save(user);
 
-        if(request.getRole().equalsIgnoreCase("participant")){
+        if (request.getRole().equalsIgnoreCase("participant")) {
             participantService.createParticipant(request);
         }
-        if(request.getRole().equalsIgnoreCase("coach")){
+        if (request.getRole().equalsIgnoreCase("coach")) {
             coachService.createCoach(request);
         }
 
@@ -76,6 +81,7 @@ public class UserService {
                 .userId(user.getId())
                 .build();
     }
+
     private void validateRegisterRequest(RegisterRequest request) {
         if (request.getFirstName() == null || request.getFirstName().isEmpty() ||
                 request.getEmail() == null || request.getEmail().isEmpty()) {

@@ -11,6 +11,12 @@ public class NotFoundApiException extends RuntimeException {
     private List<String> parameters;
 
     public NotFoundApiException(HttpStatus httpStatusCode) {
+        super();
+        this.statusCode = httpStatusCode;
+    }
+
+    public NotFoundApiException(String message, HttpStatus httpStatusCode) {
+        super(message);
         this.statusCode = httpStatusCode;
     }
 

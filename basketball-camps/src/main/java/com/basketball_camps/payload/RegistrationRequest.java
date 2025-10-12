@@ -6,11 +6,14 @@ import lombok.Data;
 
 @Data
 public class RegistrationRequest {
-    @NotNull
+    @NotNull(message = "Camp ID is required")
     private Long campId;
     
-    @NotNull
-    private Long participantId;
+    @NotNull(message = "User ID is required")
+    private Long userId;
+    
+    @NotNull(message = "School ID is required")
+    private Long schoolId;
     
     private String specialRequests;
     private JerseySize jerseySize;

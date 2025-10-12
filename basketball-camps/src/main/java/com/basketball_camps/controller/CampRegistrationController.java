@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/registrations")
 public class CampRegistrationController {
-    
+
     private final CampRegistrationService registrationService;
 
     public CampRegistrationController(CampRegistrationService registrationService) {
@@ -27,40 +27,40 @@ public class CampRegistrationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<CampRegistration> register(@RequestBody @Valid RegistrationRequest request) {
+    public ResponseEntity<CampRegistration> registerForCamp(@RequestBody @Valid RegistrationRequest request) {
         CampRegistration registration = registrationService.registerParticipant(
-            request.getCampId(), 
-            request.getParticipantId(),
-            request.getSpecialRequests(),
-                request.getJerseySize()
-        );
+                request.getCampId(),
+                request.getUserId(),
+                request.getSchoolId(),
+                request.getSpecialRequests(),
+                request.getJerseySize());
         return ResponseEntity.status(HttpStatus.CREATED).body(registration);
     }
-    
+
     @GetMapping("/camp/{campId}")
-    public ResponseEntity<List<CampRegistration>> getCampRegistrations(@PathVariable Long campId) {
+    public ResponseEntity<List<CampRegistration>> getRegistrationsByCamp(@PathVariable Long campId) {
         List<CampRegistration> registrations = registrationService.findByCampId(campId);
         return ResponseEntity.ok(registrations);
     }
-    
-    @GetMapping("/participant/{participantId}")
-    public ResponseEntity<List<CampRegistration>> getParticipantRegistrations(@PathVariable Long participantId) {
-        List<CampRegistration> registrations = registrationService.findByParticipantId(participantId);
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<CampRegistration>> getRegistrationsByUser(@PathVariable Long userId) {
+        List<CampRegistration> registrations = registrationService.findByUserId(userId);
         return ResponseEntity.ok(registrations);
     }
-    
+
     @PostMapping("/{registrationId}/confirm")
     public ResponseEntity<Void> confirmRegistration(@PathVariable Long registrationId) {
         registrationService.confirmRegistration(registrationId);
         return ResponseEntity.ok().build();
     }
-    
+
     @PostMapping("/{registrationId}/cancel")
     public ResponseEntity<Void> cancelRegistration(@PathVariable Long registrationId) {
         registrationService.cancelRegistration(registrationId);
         return ResponseEntity.ok().build();
     }
-    
+
     @GetMapping("/{registrationId}")
     public ResponseEntity<CampRegistration> getRegistration(@PathVariable Long registrationId) {
         CampRegistration registration = registrationService.findById(registrationId);

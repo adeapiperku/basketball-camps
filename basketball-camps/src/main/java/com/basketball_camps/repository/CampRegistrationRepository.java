@@ -1,7 +1,6 @@
 package com.basketball_camps.repository;
 
 import com.basketball_camps.model.CampRegistration;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -11,7 +10,16 @@ import com.basketball_camps.enums.RegistrationStatus;
 
 public interface CampRegistrationRepository extends JpaRepository<CampRegistration, Long> {
     List<CampRegistration> findByCampId(Long campId);
-    List<CampRegistration> findByParticipantId(Long participantId);
-    Optional<CampRegistration> findByCampIdAndParticipantId(Long campId, Long participantId);
+    
+    // Find registrations by user ID
+    List<CampRegistration> findByUserId(Long userId);
+    
+    // Find a specific registration by camp ID and user ID
+    Optional<CampRegistration> findByCampIdAndUserId(Long campId, Long userId);
+    
+    // Count registrations by camp ID and status
     Long countByCampIdAndStatus(Long campId, RegistrationStatus status);
+    
+    // Find registrations by status
+    List<CampRegistration> findByStatus(RegistrationStatus status);
 }
