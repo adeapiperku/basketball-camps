@@ -55,9 +55,13 @@ export default function Header() {
             Home
           </Button>
 
+          <Button color="inherit" component={RouterLink} to="/information">
+            Camps
+          </Button>
+
           {isLoggedIn && userRole?.toUpperCase() === 'COACH' && (
             <Button color="inherit" component={RouterLink} to="/registrations">
-              Camp Participants
+              Participants
             </Button>
           )}
           {isLoggedIn && userRole?.toUpperCase() === 'ADMIN' && (

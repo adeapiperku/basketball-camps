@@ -7,6 +7,7 @@ import PrivateRoute from "./routes/PrivateRoute";
 import SignUp from "./page/home/SignUp";
 import SignIn from "./page/home/SignIn";
 import Dashboard from "./components/dashboard/Dashboard";
+import CampsInformation from "./page/home/CampsInformation";
 
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
         <Route path="/register" element={<SignUp />} />
         <Route path="/home" element={<Navigate to="/" replace />} />
         <Route path="/" element={<Home />} />
+        <Route path="/information" element={<CampsInformation />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route path="/registrations" element={<RegisteredParticipants />} />
         <Route path="/camps/:campId/register" element={<CampRegistrationForm />} />
