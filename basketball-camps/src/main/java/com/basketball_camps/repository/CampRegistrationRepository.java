@@ -7,19 +7,46 @@ import java.util.List;
 import java.util.Optional;
 
 import com.basketball_camps.enums.RegistrationStatus;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface CampRegistrationRepository extends JpaRepository<CampRegistration, Long> {
-    List<CampRegistration> findByCampId(Long campId);
     
-    // Find registrations by user ID
-    List<CampRegistration> findByUserId(Long userId);
+    @Query("SELECT cr FROM CampRegistration cr " +
+           "LEFT JOIN FETCH cr.camp " +
+           "LEFT JOIN FETCH cr.participant " +
+           "LEFT JOIN FETCH cr.school " +
+           "WHERE cr.camp.id = :campId")
+    List<CampRegistration> findByCampId(@Param("campId") Long campId);
     
-    // Find a specific registration by camp ID and user ID
-    Optional<CampRegistration> findByCampIdAndUserId(Long campId, Long userId);
+    @Query("SELECT cr FROM CampRegistration cr " +
+           "LEFT JOIN FETCH cr.camp " +
+           "LEFT JOIN FETCH cr.participant " +
+           "LEFT JOIN FETCH cr.school " +
+           "WHERE cr.participant.id = :participantId")
+    List<CampRegistration> findByParticipantId(@Param("participantId") Long participantId);
+        
+    @Query("SELECT cr FROM CampRegistration cr " +
+           "LEFT JOIN FETCH cr.camp " +
+           "LEFT JOIN FETCH cr.participant " +
+           "LEFT JOIN FETCH cr.school " +
+           "WHERE cr.camp.id = :campId AND cr.participant.id = :participantId")
+    Optional<CampRegistration> findByCampIdAndParticipantId(
+        @Param("campId") Long campId, 
+        @Param("participantId") Long participantId
+    );
     
-    // Count registrations by camp ID and status
-    Long countByCampIdAndStatus(Long campId, RegistrationStatus status);
+    @Query("SELECT COUNT(cr) FROM CampRegistration cr " +
+           "WHERE cr.camp.id = :campId AND cr.status = :status")
+    Long countByCampIdAndStatus(
+        @Param("campId") Long campId, 
+        @Param("status") RegistrationStatus status
+    );
     
-    // Find registrations by status
-    List<CampRegistration> findByStatus(RegistrationStatus status);
+    @Query("SELECT cr FROM CampRegistration cr " +
+           "LEFT JOIN FETCH cr.camp " +
+           "LEFT JOIN FETCH cr.participant " +
+           "LEFT JOIN FETCH cr.school " +
+           "WHERE cr.status = :status")
+    List<CampRegistration> findByStatus(@Param("status") RegistrationStatus status);
 }

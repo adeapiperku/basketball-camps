@@ -17,7 +17,7 @@ const App = () => {
         <Route path="/home" element={<Navigate to="/" replace />} />
         <Route path="/" element={<Home />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
-        <Route path="/coach/camp-participants" element={<RegisteredParticipants />} />
+        <Route path="/registrations" element={<RegisteredParticipants />} />
         <Route path="/camps/:campId/register" element={<CampRegistrationForm />} />
 
         <Route path="/admin/*" element={<PrivateRoute roles={['ADMIN']} component={Dashboard} />} />

@@ -17,8 +17,8 @@ import com.basketball_camps.enums.RegistrationStatus;
 public class CampRegistration extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "participant_id", nullable = false)
+    private Participant participant;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "camp_id", nullable = false)
@@ -44,8 +44,8 @@ public class CampRegistration extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String specialRequests;
 
-     @Enumerated(EnumType.STRING)
-     private JerseySize jerseySize;
+    @Enumerated(EnumType.STRING)
+    private JerseySize jerseySize;
 
     public boolean isConfirmed() {
         return status == RegistrationStatus.CONFIRMED;

@@ -62,8 +62,20 @@ export default function Home() {
           <Grid container spacing={4} justifyContent="center">
             {camps.map((camp) => (
               <Grid item key={camp.id} xs={12} sm={6} md={4}>
-                <Card sx={cardStyles}>
-                  <CardContent sx={cardContentStyles}>
+                <Card 
+                  sx={{
+                    ...cardStyles,
+                    opacity: camp.isActive ? 1 : 0.85,
+                    filter: 'none',
+                    transition: 'all 0.3s ease',
+                    position: 'relative',
+                    '&:hover': {
+                      transform: camp.isActive ? 'translateY(-5px)' : 'none',
+                      boxShadow: camp.isActive ? 6 : 'none'
+                    }
+                  }}
+                >
+                  <CardContent sx={{ ...cardContentStyles }}>
                     <Typography variant="h6" sx={cardTitleStyles}>
                       {camp.name}
                     </Typography>
@@ -78,15 +90,20 @@ export default function Home() {
                     </Typography>
                     <Typography variant="subtitle2">Price: {camp.price}</Typography>
                   </CardContent>
+
                   <CardActions sx={cardActionsStyles}>
                     <Button
                       variant="contained"
                       color="primary"
                       fullWidth
                       onClick={() => handleRegisterClick(camp.id)}
-                      sx={buttonStyles}
+                      sx={{
+                        ...buttonStyles,
+                        opacity: camp.isActive ? 1 : 0.5,
+                        pointerEvents: camp.isActive ? 'auto' : 'none',
+                      }}
                     >
-                      Register
+                      {camp.isActive ? 'Register' : 'Not Available'}
                     </Button>
                   </CardActions>
                 </Card>

@@ -7,7 +7,7 @@ import com.basketball_camps.exception.ExceptionPayload;
 import com.basketball_camps.exception.NotFoundApiException;
 import com.basketball_camps.model.Camp;
 import com.basketball_camps.model.CampRegistration;
-import com.basketball_camps.model.User;
+import com.basketball_camps.model.Participant;
 import com.basketball_camps.model.School;
 import com.basketball_camps.repository.CampRegistrationRepository;
 
@@ -18,63 +18,85 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class CampRegistrationService extends BasicServiceOperations<CampRegistrationRepository, CampRegistration> {
 
     private final CampService campService;
-    private final UserService userService;
+    private final ParticipantService participantService;
     private final SchoolService schoolService;
 
     public CampRegistrationService(CampRegistrationRepository repository, CampService campService,
-            UserService userService, SchoolService schoolService) {
+            ParticipantService participantService, SchoolService schoolService) {
         super(repository);
         this.campService = campService;
-        this.userService = userService;
+        this.participantService = participantService;
         this.schoolService = schoolService;
     }
 
     @Transactional
-    public CampRegistration registerParticipant(Long campId, Long userId, Long schoolId,
-            String specialRequests, JerseySize jerseySize) {
+    public CampRegistration registerParticipant(Long campId, Long participantId, Long schoolId,
+            String specialRequests, String jerseySizeStr) {
 
         Camp camp = campService.findById(campId);
         if (camp == null) {
-            throw new NotFoundApiException("Camp not found with id: " + campId, HttpStatus.NOT_FOUND);
+            throw new NotFoundApiException(HttpStatus.NOT_FOUND)
+                    .addParameter("Camp not found with id: " + campId);
         }
 
-        User user = userService.findById(userId);
-        if (user == null) {
-            throw new NotFoundApiException("User not found with id: " + userId, HttpStatus.NOT_FOUND);
+        Participant participant = participantService.findById(participantId);
+        if (participant == null) {
+            throw new NotFoundApiException(HttpStatus.NOT_FOUND)
+                    .addParameter("Participant not found with id: " + participantId);
         }
 
-        School school = schoolService.findById(schoolId);
-        if (school == null) {
-            throw new NotFoundApiException("School not found with id: " + schoolId, HttpStatus.NOT_FOUND);
+        try {
+            JerseySize jerseySize = null;
+            if (jerseySizeStr != null && !jerseySizeStr.isEmpty()) {
+                try {
+                    jerseySize = JerseySize.valueOf(jerseySizeStr.toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    throw new IllegalArgumentException("Invalid jersey size: " + jerseySizeStr);
+                }
+            }
+
+            School school = schoolService.findById(schoolId);
+            if (school == null) {
+                throw new NotFoundApiException("School not found with id: " + schoolId, HttpStatus.NOT_FOUND);
+            }
+
+            validateRegistration(camp, participant);
+
+            CampRegistration registration = new CampRegistration();
+            registration.setCamp(camp);
+            registration.setParticipant(participant);
+            registration.setSchool(school);
+            registration.setRegisteredAt(LocalDateTime.now());
+            registration.setSpecialRequests(specialRequests);
+            registration.setJerseySize(jerseySize);
+
+            if (camp.getPrice() == null) {
+                throw new IllegalStateException("Camp price is not set");
+            }
+            registration.setAmountPaid(camp.getPrice());
+            registration.setStatus(RegistrationStatus.PENDING);
+
+            if (camp.getCurrentParticipants() < camp.getMaxParticipants()) {
+                registration.setStatus(RegistrationStatus.CONFIRMED);
+                registration.setConfirmedAt(LocalDateTime.now());
+                camp.incrementParticipants();
+                campService.save(camp);
+            } else {
+                registration.setStatus(RegistrationStatus.WAITLIST);
+            }
+
+            return repository.save(registration);
+        } catch (Exception e) {
+            log.error("Error in registerParticipant", e);
+            throw e;
         }
-
-        validateRegistration(camp, user);
-
-        CampRegistration registration = new CampRegistration();
-        registration.setCamp(camp);
-        registration.setUser(user);
-        registration.setSchool(school);
-        registration.setRegisteredAt(LocalDateTime.now());
-        registration.setSpecialRequests(specialRequests);
-        registration.setJerseySize(jerseySize);
-        registration.setAmountPaid(camp.getPrice());
-        registration.setStatus(RegistrationStatus.PENDING);
-
-        if (camp.getCurrentParticipants() < camp.getMaxParticipants()) {
-            registration.setStatus(RegistrationStatus.CONFIRMED);
-            registration.setConfirmedAt(LocalDateTime.now());
-            camp.incrementParticipants();
-            campService.save(camp);
-        } else {
-            registration.setStatus(RegistrationStatus.WAITLIST);
-        }
-
-        return repository.save(registration);
     }
 
     @Transactional
@@ -119,27 +141,44 @@ public class CampRegistrationService extends BasicServiceOperations<CampRegistra
         }
     }
 
+    @Transactional(readOnly = true)
     public List<CampRegistration> findByCampId(Long campId) {
-        return repository.findByCampId(campId);
+        try {
+            if (campId == null) {
+                throw new IllegalArgumentException("Camp ID cannot be null");
+            }
+
+            List<CampRegistration> registrations = repository.findByCampId(campId);
+            if (registrations != null) {
+                for (CampRegistration reg : registrations) {
+                    if (reg.getParticipant() != null) {
+                        reg.getParticipant().getId();
+                    }
+                }
+            }
+
+            return registrations;
+        } catch (Exception e) {
+            log.error("Error finding registrations for camp " + campId, e);
+            throw new RuntimeException("Failed to fetch registrations for camp: " + e.getMessage(), e);
+        }
     }
 
-    public List<CampRegistration> findByUserId(Long userId) {
-        return repository.findByUserId(userId);
+    @Transactional(readOnly = true)
+    public List<CampRegistration> findByParticipantId(Long participantId) {
+        return repository.findByParticipantId(participantId);
     }
 
-    public Optional<CampRegistration> findByCampIdAndUserId(Long campId, Long userId) {
-        return repository.findByCampIdAndUserId(campId, userId);
+    @Transactional(readOnly = true)
+    public Optional<CampRegistration> findByCampIdAndParticipantId(Long campId, Long participantId) {
+        return repository.findByCampIdAndParticipantId(campId, participantId);
     }
 
     public List<CampRegistration> findByStatus(RegistrationStatus status) {
         return repository.findByStatus(status);
     }
 
-    // public int countByCampIdAndStatus(Long campId, RegistrationStatus status) {
-    // return repository.countByCampIdAndStatus(campId, status);
-    // }
-
-    private void validateRegistration(Camp camp, User user) {
+    private void validateRegistration(Camp camp, Participant participant) {
         if (!camp.isRegistrationOpen()) {
             ExceptionPayload payload = ExceptionPayload.builder()
                     .message("Registration is closed for this camp")
@@ -148,17 +187,17 @@ public class CampRegistrationService extends BasicServiceOperations<CampRegistra
             throw new EntityValidationException(payload);
         }
 
-        if (isAlreadyRegistered(camp.getId(), user.getId())) {
+        if (isAlreadyRegistered(camp.getId(), participant.getId())) {
             ExceptionPayload payload = ExceptionPayload.builder()
-                    .message("User already registered for this camp")
+                    .message("participant already registered for this camp")
                     .code("ALREADY_REGISTERED")
                     .build();
             throw new EntityValidationException(payload);
         }
     }
 
-    private boolean isAlreadyRegistered(Long campId, Long userId) {
-        return repository.findByCampIdAndUserId(campId, userId).isPresent();
+    private boolean isAlreadyRegistered(Long campId, Long participantId) {
+        return repository.findByCampIdAndParticipantId(campId, participantId).isPresent();
     }
 
     private void promoteWaitlistParticipant(Long campId) {

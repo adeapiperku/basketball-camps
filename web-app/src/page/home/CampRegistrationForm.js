@@ -1,29 +1,42 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Typography, TextField, Button, Box, MenuItem, CircularProgress, Paper } from '@mui/material';
-import { useSchools } from '../../hooks/useSchools';
-import { jwtDecode } from 'jwt-decode';
-import Header from '../../components/Header';
-import Footer from '../../components/Footer';
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Box,
+  MenuItem,
+  CircularProgress,
+  Paper,
+} from "@mui/material";
+import { useSchools } from "../../hooks/useSchools";
+import { jwtDecode } from "jwt-decode";
+import Header from "../../components/Header";
+import Footer from "../../components/Footer";
 
-const JERSEY_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+const JERSEY_SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
 
 export default function CampRegistrationForm() {
   const { campId } = useParams();
   const navigate = useNavigate();
-  const { schools, loading: loadingSchools, error: schoolsError } = useSchools();
+  const {
+    schools,
+    loading: loadingSchools,
+    error: schoolsError,
+  } = useSchools();
 
-  const [selectedSchool, setSelectedSchool] = useState('');
-  const [specialRequests, setSpecialRequests] = useState('');
-  const [jerseySize, setJerseySize] = useState('');
+  const [selectedSchool, setSelectedSchool] = useState("");
+  const [specialRequests, setSpecialRequests] = useState("");
+  const [jerseySize, setJerseySize] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem("authToken");
     if (!token) {
-      navigate('/login');
+      navigate("/login");
       return;
     }
 
@@ -35,53 +48,66 @@ export default function CampRegistrationForm() {
         lastName: decoded.lastName,
       });
     } catch (err) {
-      console.error('Failed to decode token:', err);
-      navigate('/login');
+      console.error("Failed to decode token:", err);
+      navigate("/login");
     }
   }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    setMessage('');
+    setMessage("");
 
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem("authToken");
     if (!token || !user?.id) {
-      setMessage('You must be logged in to register.');
+      setMessage("You must be logged in to register.");
       setSubmitting(false);
-      navigate('/login');
-      return;
     }
 
-    const registrationData = {
-      participantId: user.id,
-      campId,
-      schoolId: selectedSchool,
-      specialRequests,
-      jerseySize,
-    };
-
     try {
-      const response = await fetch('http://localhost:8080/registrations/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(registrationData),
-      });
+      const registrationData = {
+        participantId: Number(user.id),
+        campId: Number(campId),
+        schoolId: Number(selectedSchool),
+        specialRequests: specialRequests || null,
+        jerseySize: jerseySize || null,
+      };
+
+      console.log("Sending registration data:", registrationData);
+
+      const response = await fetch("http://localhost:8080/registrations/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(registrationData),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Registration failed');
+        const errorData = await response.json();
+        console.error("Server error response:", errorData);
+        throw new Error(errorData.message || "Registration failed");
       }
+      setMessage("Registration successful!");
+      setSelectedSchool("");
+      setSpecialRequests("");
+      setJerseySize("");
 
-      setMessage('Registration successful.');
-      setSelectedSchool('');
-      setSpecialRequests('');
-      setJerseySize('');
+      setTimeout(() => {
+        navigate("/home");
+      }, 2000);
     } catch (err) {
-      console.error(err);
-      setMessage('Something went wrong. Please try again.');
+      console.error("Registration error:", {
+        message: err.message,
+        stack: err.stack,
+      });
+      setMessage(
+        err.message ||
+          "An error occurred during registration. Please try again."
+      );
     } finally {
       setSubmitting(false);
     }
@@ -98,7 +124,10 @@ export default function CampRegistrationForm() {
 
           {user && (
             <Typography variant="subtitle1" gutterBottom>
-              Participant: <strong>{user.firstName} {user.lastName}</strong>
+              User:{" "}
+              <strong>
+                {user.firstName} {user.lastName}
+              </strong>
             </Typography>
           )}
 
@@ -165,7 +194,7 @@ export default function CampRegistrationForm() {
               <Typography
                 mt={2}
                 textAlign="center"
-                color={message.includes('successful') ? 'green' : 'red'}
+                color={message.includes("successful") ? "green" : "red"}
               >
                 {message}
               </Typography>

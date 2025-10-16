@@ -55,9 +55,8 @@ export default function Header() {
             Home
           </Button>
 
-          {/* 👇 Show only if user is COACH */}
           {isLoggedIn && userRole?.toUpperCase() === 'COACH' && (
-            <Button color="inherit" component={RouterLink} to="/coach/camp-participants">
+            <Button color="inherit" component={RouterLink} to="/registrations">
               Camp Participants
             </Button>
           )}
