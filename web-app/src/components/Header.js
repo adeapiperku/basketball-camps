@@ -60,6 +60,11 @@ export default function Header() {
               Camp Participants
             </Button>
           )}
+          {isLoggedIn && userRole?.toUpperCase() === 'ADMIN' && (
+            <Button color="inherit" component={RouterLink} to="/admin">
+              Dashboard
+            </Button>
+          )}
 
           {!isLoggedIn ? (
             <Button color="inherit" component={RouterLink} to="/login">
