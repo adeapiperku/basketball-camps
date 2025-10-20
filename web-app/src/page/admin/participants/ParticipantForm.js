@@ -173,15 +173,17 @@ function ParticipantForm(props) {
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
             <TextField
-              value={formValues.type ?? ''}
+              value={formValues.role ? formValues.role.charAt(0).toUpperCase() + formValues.role.slice(1).toLowerCase() : ''}
               disabled
-              // onChange={handleTextFieldChange}
-              name="type"
-              label="Type"
-              placeholder="e.g., Participant"
-              error={!!formErrors.type}
-              helperText={formErrors.type ?? ' '}
+              name="role"
+              label="Role"
+              error={!!formErrors.role}
+              helperText={formErrors.role ?? ' '}
               fullWidth
+              InputLabelProps={{ shrink: true }}
+              InputProps={{
+                readOnly: true,
+              }}
             />
           </Grid>          
         </Grid>
@@ -218,7 +220,7 @@ ParticipantForm.propTypes = {
       birthDate: PropTypes.string,
       phoneNumber: PropTypes.string,
       emergencyContactPhone: PropTypes.string,
-      type: PropTypes.string,
+      role: PropTypes.string,
     }).isRequired,
     values: PropTypes.shape({
       id: PropTypes.number,
@@ -229,7 +231,7 @@ ParticipantForm.propTypes = {
       birthDate: PropTypes.string,
       phoneNumber: PropTypes.string,
       emergencyContactPhone: PropTypes.string,
-      type: PropTypes.string,
+      role: PropTypes.string,
     }).isRequired,
   }).isRequired,
   onFieldChange: PropTypes.func.isRequired,

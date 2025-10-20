@@ -183,7 +183,7 @@ export default function ParticipantShow() {
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Paper sx={{ px: 2, py: 1 }}>
-              <Typography variant="overline">Type</Typography>
+              <Typography variant="overline">Role</Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
                 {participant.type}
               </Typography>

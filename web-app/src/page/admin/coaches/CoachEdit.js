@@ -117,6 +117,7 @@ CoachEditForm.propTypes = {
     password: PropTypes.string,
     phoneNumber: PropTypes.string,
     birthDate: PropTypes.string,
+    role: PropTypes.string,
   }).isRequired,
   onSubmit: PropTypes.func.isRequired,
 };
@@ -135,11 +136,13 @@ export default function CoachEdit() {
     try {
       const service = new CoachService();
       const showData = await service.findById(Number(coachId));
-      if (showData.birthDate) {
-        showData.birthDate = new Date(showData.birthDate).toISOString().split('T')[0];
-      }
+      const formattedData = {
+        ...showData,
+        birthDate: showData.birthDate ? new Date(showData.birthDate).toISOString().split('T')[0] : null,
+        role: showData.role || 'COACH'
+      };
 
-      setCoach(showData);
+      setCoach(formattedData);
     } catch (showDataError) {
       setError(showDataError);
     }

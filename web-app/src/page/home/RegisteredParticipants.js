@@ -33,7 +33,7 @@ export default function RegisteredParticipants() {
           jerseySize: reg.jerseySize || "N/A",
           status: reg.status ?? "N/A",
           registeredAt: formatDateTime(reg.registeredAt),
-          amountPaid: reg.price ? `$${parseFloat(reg.price).toFixed(2)}` : "$0.00",
+          amountPaid: reg.amountPaid ? `$${parseFloat(reg.amountPaid).toFixed(2)}` : "Not Paid",
           specialRequests: reg.specialRequests || "None",
         }));
         setParticipants(formattedData);
@@ -75,7 +75,7 @@ export default function RegisteredParticipants() {
       ),
     },
     { field: "registeredAt", headerName: "Registered At", width: 180 },
-    { field: "amountPaid", headerName: "Amount Paid", width: 130 },
+    { field: "amountPaid", headerName: "Price", width: 130 },
     { field: "specialRequests", headerName: "Special Requests", flex: 1, minWidth: 200 },
   ];
 

@@ -117,16 +117,6 @@ export default function RegistrationList() {
     if (!isLoading) loadData();
   }, [isLoading, loadData]);
 
-  const handleRowClick = React.useCallback(
-    ({ row }) => navigate(`/admin/registrations/${row.id}`),
-    [navigate]
-  );
-
-  const handleViewClick = React.useCallback(
-    (row) => () => navigate(`/admin/registrations/${row.id}`), 
-    [navigate]
-  );
-
   const initialState = React.useMemo(
     () => ({ pagination: { paginationModel: { pageSize: INITIAL_PAGE_SIZE } } }), []);
 
@@ -233,7 +223,6 @@ export default function RegistrationList() {
             filterModel={filterModel}
             onFilterModelChange={handleFilterModelChange}
             disableRowSelectionOnClick
-            onRowClick={handleRowClick}
             loading={isLoading}
             initialState={initialState}
             showToolbar

@@ -46,7 +46,7 @@ function ParticipantEditForm({ initialValues, onSubmit }) {
         if (!values.password) issues.push({ path: ['password'], message: 'Password is required' });
         if (!values.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
         if (!values.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
-        if (!values.type) issues.push({ path: ['type'], message: 'Type is required' });
+        if (!values.role) issues.push({ path: ['role'], message: 'Role is required' });
         setFormErrors({
           ...formErrors,
           [name]: issues?.find((issue) => issue.path?.[0] === name)?.message,
@@ -73,7 +73,7 @@ function ParticipantEditForm({ initialValues, onSubmit }) {
     if (!formValues.password) issues.push({ path: ['password'], message: 'Password is required' });
     if (!formValues.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
     if (!formValues.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
-    if (!formValues.type) issues.push({ path: ['type'], message: 'Type is required' });
+    if (!formValues.role) issues.push({ path: ['role'], message: 'Role is required' });
     if (issues && issues.length > 0) {
       setFormErrors(
         Object.fromEntries(issues.map((issue) => [issue.path?.[0], issue.message])),
@@ -163,7 +163,7 @@ export default function ParticipantEdit() {
         emergencyContactPhone: showData.emergencyContactPhone ?? '',
         schoolId: showData.school?.id ?? '',
         birthDate,
-        type: showData.type ?? '',
+        role: showData.role ?? '',
       };
       setParticipant(mapped);
     } catch (showDataError) {
@@ -188,7 +188,7 @@ export default function ParticipantEdit() {
         phoneNumber: formValues.phoneNumber || null,
         emergencyContactPhone: formValues.emergencyContactPhone || null,
         school: formValues.schoolId ? { id: Number(formValues.schoolId) } : null,
-        type: formValues.type || '',
+        role: formValues.role || 'PARTICIPANT',
       };
       const updatedData = await service.update(payload);
       setParticipant({ ...formValues, id: Number(participantId) });

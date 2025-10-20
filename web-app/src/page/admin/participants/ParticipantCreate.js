@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router';
 import useNotifications from '../../../hooks/useNotifications/useNotifications';
-import { ParticipantService } from '../../../service/ParticipantService';
+import { registerUser } from '../../../service/requests/auth';
 import ParticipantForm from './ParticipantForm';
 import PageContainer from '../../../components/PageContainer';
 
@@ -10,11 +10,9 @@ const INITIAL_FORM_VALUES = {
   lastName: '',
   email: '',
   password: '',
-  birthDate: '',
   phoneNumber: '',
-  emergencyContactPhone: '',
-  schoolId: '',
-  type: 'Participant', // default type
+  birthDate: '',
+  role: 'PARTICIPANT',
 };
 
 export default function ParticipantCreate() {
@@ -25,83 +23,79 @@ export default function ParticipantCreate() {
     values: INITIAL_FORM_VALUES,
     errors: {},
   });
-
-  const formValues = formState.values;
-  const formErrors = formState.errors;
-
-  const setFormValues = React.useCallback((newValues) => {
-    setFormState((prev) => ({ ...prev, values: newValues }));
-  }, []);
-
-  const setFormErrors = React.useCallback((newErrors) => {
-    setFormState((prev) => ({ ...prev, errors: newErrors }));
-  }, []);
-
-  const handleFormFieldChange = React.useCallback(
-    (name, value) => {
-      const newFormValues = { ...formValues, [name]: value };
-      setFormValues(newFormValues);
-
-      // simple validation
-      const issues = [];
-      if (!newFormValues.firstName) issues.push({ path: ['firstName'], message: 'First name is required' });
-      if (!newFormValues.lastName) issues.push({ path: ['lastName'], message: 'Last name is required' });
-      if (!newFormValues.email) issues.push({ path: ['email'], message: 'Email is required' });
-      if (!newFormValues.password) issues.push({ path: ['password'], message: 'Password is required' });
-      if (!newFormValues.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
-      if (!newFormValues.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
-      if (!newFormValues.type) issues.push({ path: ['type'], message: 'Type is required' });
-
-      setFormErrors({
-        ...formErrors,
-        [name]: issues.find((issue) => issue.path?.[0] === name)?.message,
-      });
-    },
-    [formValues, formErrors, setFormValues, setFormErrors]
+  const { values, errors } = formState;
+  const setFormValues = React.useCallback(
+    (newValues) => setFormState((prev) => ({ ...prev, values: newValues })),
+    []
   );
 
-  const handleFormReset = React.useCallback(() => {
+  const setFormErrors = React.useCallback(
+    (newErrors) => setFormState((prev) => ({ ...prev, errors: newErrors })),
+    []
+  );
+
+  const handleFieldChange = React.useCallback(
+    (name, value) => {
+      const newValues = { ...values, [name]: value };
+      setFormValues(newValues);
+      const newErrors = { ...errors };
+
+      if (!value) {
+        newErrors[name] = `${name.charAt(0).toUpperCase() + name.slice(1)} is required`;
+      } else {
+        delete newErrors[name];
+      }
+
+      if (name === 'email' && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        newErrors.email = 'Invalid email address';
+      }
+
+      if (name === 'password' && value.length < 5) {
+        newErrors.password = 'Password must be at least 5 characters';
+      }
+
+      if (name === 'birthDate') {
+        const today = new Date().toISOString().split('T')[0];
+        if (value > today) newErrors.birthDate = 'Birth date cannot be in the future';
+      }
+
+      setFormErrors(newErrors);
+    },
+    [values, errors, setFormValues, setFormErrors]
+  );
+
+  const handleReset = React.useCallback(() => {
     setFormValues(INITIAL_FORM_VALUES);
-  }, [setFormValues]);
+    setFormErrors({});
+  }, [setFormValues, setFormErrors]);
 
-  const handleFormSubmit = React.useCallback(async () => {
-    const issues = [];
-    if (!formValues.firstName) issues.push({ path: ['firstName'], message: 'First name is required' });
-    if (!formValues.lastName) issues.push({ path: ['lastName'], message: 'Last name is required' });
-    if (!formValues.email) issues.push({ path: ['email'], message: 'Email is required' });
-    if (!formValues.password) issues.push({ path: ['password'], message: 'Password is required' });
-    if (!formValues.birthDate) issues.push({ path: ['birthDate'], message: 'Birth date is required' });
-    if (!formValues.phoneNumber) issues.push({ path: ['phoneNumber'], message: 'Phone number is required' });
-    if (!formValues.type) issues.push({ path: ['type'], message: 'Type is required' });
+  const handleSubmit = React.useCallback(async () => {
+    const newErrors = {};
+    Object.entries(values).forEach(([key, val]) => {
+      if (!val && key !== 'role') {
+        newErrors[key] = `${key.charAt(0).toUpperCase() + key.slice(1)} is required`;
+      }
+    });
 
-    if (issues.length > 0) {
-      setFormErrors(Object.fromEntries(issues.map((i) => [i.path?.[0], i.message])));
+    if (Object.keys(newErrors).length > 0) {
+      setFormErrors(newErrors);
       return;
     }
-    setFormErrors({});
 
     try {
-      const service = new ParticipantService();
-      const payload = {
-        firstName: formValues.firstName,
-        lastName: formValues.lastName,
-        email: formValues.email,
-        password: formValues.password,
-        birthDate: formValues.birthDate || null,
-        phoneNumber: formValues.phoneNumber || null,
-        emergencyContactPhone: formValues.emergencyContactPhone || null,
-        school: formValues.schoolId ? { id: Number(formValues.schoolId) } : null,
-        type: formValues.type,
-      };
-      await service.create(payload);
-
-      notifications.show('Participant created successfully.', { severity: 'success', autoHideDuration: 3000 });
+      await registerUser(values);
+      notifications.show('Participant created successfully.', {
+        severity: 'success',
+        autoHideDuration: 3000,
+      });
       navigate('/admin/participants');
     } catch (error) {
-      notifications.show(`Failed to create participant. Reason: ${error.message}`, { severity: 'error', autoHideDuration: 3000 });
-      throw error;
+      notifications.show(`Failed to create participant. Reason: ${error.message}`, {
+        severity: 'error',
+        autoHideDuration: 3000,
+      });
     }
-  }, [formValues, navigate, notifications, setFormErrors]);
+  }, [values, navigate, notifications, setFormErrors]);
 
   return (
     <PageContainer
@@ -110,9 +104,9 @@ export default function ParticipantCreate() {
     >
       <ParticipantForm
         formState={formState}
-        onFieldChange={handleFormFieldChange}
-        onSubmit={handleFormSubmit}
-        onReset={handleFormReset}
+        onFieldChange={handleFieldChange}
+        onSubmit={handleSubmit}
+        onReset={handleReset}
         submitButtonLabel="Create"
       />
     </PageContainer>

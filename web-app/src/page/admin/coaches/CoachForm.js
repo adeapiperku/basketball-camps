@@ -50,7 +50,6 @@ function CoachForm(props) {
   const handleDateFieldChange = React.useCallback(
     (event) => {
       const { name, value } = event.target;
-      // HTML date input provides yyyy-MM-dd; convert to ISO string for consistency
       if (value) {
         try {
           const date = new Date(value);
@@ -131,7 +130,7 @@ function CoachForm(props) {
               value={formValues.password ?? ''}
               onChange={handleTextFieldChange}
               name="password"
-              label={formValues.id ? 'New Password (leave blank to keep current)' : 'Password'}
+              label={formValues.id ? 'New Password' : 'Password'}
               error={!!formErrors.password}
               helperText={formErrors.password || (formValues.id ? ' ' : '')}
               fullWidth
@@ -163,13 +162,17 @@ function CoachForm(props) {
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
             <TextField
-              value={formValues.role ?? ''}
+              value={formValues.role ? formValues.role.charAt(0).toUpperCase() + formValues.role.slice(1).toLowerCase() : ''}
               disabled
               name="role"
               label="Role"
               error={!!formErrors.role}
               helperText={formErrors.role ?? ' '}
               fullWidth
+              InputLabelProps={{ shrink: true }}
+              InputProps={{
+                readOnly: true,
+              }}
             />
           </Grid>
         </Grid>
