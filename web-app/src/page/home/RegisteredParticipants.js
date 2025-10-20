@@ -5,6 +5,7 @@ import useCamps from "../../hooks/useCamps";
 import { RegistrationService } from "../../service/RegistrationService";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
+import { formatDateTime } from "../../utils/dateUtils";
 
 export default function RegisteredParticipants() {
   const { camps, loading: loadingCamps, error: campsError } = useCamps();
@@ -14,7 +15,10 @@ export default function RegisteredParticipants() {
   const [errorParticipants, setErrorParticipants] = useState(null);
 
   useEffect(() => {
-    if (!selectedCamp) return;
+    if (!selectedCamp) {
+      setParticipants([]);
+      return;
+    }
 
     const fetchParticipants = async () => {
       setLoadingParticipants(true);
@@ -24,16 +28,12 @@ export default function RegisteredParticipants() {
 
         const formattedData = registrations.map((reg) => ({
           id: reg.id,
-          participantName: `${reg.participant?.firstName || ""} ${
-            reg.participant?.lastName || ""
-          }`.trim(),
+          participantName: `${reg.participant?.firstName || ""} ${reg.participant?.lastName || ""}`.trim(),
           schoolName: reg.school?.name || "N/A",
           jerseySize: reg.jerseySize || "N/A",
-          status: reg.status,
-          registeredAt: reg.registeredAt,
-          confirmedAt: reg.confirmedAt || null,
-          cancelledAt: reg.cancelledAt || null,
-          amountPaid: reg.price || 0,
+          status: reg.status ?? "N/A",
+          registeredAt: formatDateTime(reg.registeredAt),
+          amountPaid: reg.price ? `$${parseFloat(reg.price).toFixed(2)}` : "$0.00",
           specialRequests: reg.specialRequests || "None",
         }));
         setParticipants(formattedData);
@@ -50,34 +50,10 @@ export default function RegisteredParticipants() {
     fetchParticipants();
   }, [selectedCamp]);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    try {
-      return new Date(dateString).toLocaleString();
-    } catch (e) {
-      console.error("Error formatting date:", e);
-      return "Invalid date";
-    }
-  };
-
   const columns = [
-    {
-      field: "participantName",
-      headerName: "Participant",
-      flex: 1,
-      minWidth: 200,
-    },
-    {
-      field: "schoolName",
-      headerName: "School",
-      flex: 1,
-      minWidth: 150,
-    },
-    {
-      field: "jerseySize",
-      headerName: "Jersey Size",
-      width: 120,
-    },
+    { field: "participantName", headerName: "Participant", flex: 1, minWidth: 200 },
+    { field: "schoolName", headerName: "School", flex: 1, minWidth: 150 },
+    { field: "jerseySize", headerName: "Jersey Size", width: 120 },
     {
       field: "status",
       headerName: "Status",
@@ -98,33 +74,9 @@ export default function RegisteredParticipants() {
         </span>
       ),
     },
-    {
-      field: "registeredAt",
-      headerName: "Registered At",
-      width: 180,
-      valueFormatter: (params) => formatDate(params.value),
-    },
-    {
-      field: "confirmedAt",
-      headerName: "Confirmed At",
-      width: 180,
-      valueFormatter: (params) => formatDate(params.value),
-    },
-    {
-      field: "amountPaid",
-      headerName: "Amount Paid",
-      width: 130,
-      valueFormatter: (params) => {
-        const value = parseFloat(params.value);
-        return isNaN(value) ? "$0.00" : `$${value.toFixed(2)}`;
-      },
-    },
-    {
-      field: "specialRequests",
-      headerName: "Special Requests",
-      flex: 1,
-      minWidth: 200,
-    },
+    { field: "registeredAt", headerName: "Registered At", width: 180 },
+    { field: "amountPaid", headerName: "Amount Paid", width: 130 },
+    { field: "specialRequests", headerName: "Special Requests", flex: 1, minWidth: 200 },
   ];
 
   return (
@@ -148,6 +100,7 @@ export default function RegisteredParticipants() {
             fullWidth
             margin="normal"
           >
+            <MenuItem value="">Select a Camp</MenuItem>
             {camps.map((camp) => (
               <MenuItem key={camp.id} value={camp.id}>
                 {camp.name}
@@ -156,15 +109,15 @@ export default function RegisteredParticipants() {
           </TextField>
         )}
 
-        <Box sx={{ height: 600, width: "100%", mt: 3 }}>
+        <Box sx={{ width: "100%", mt: 3 }}>
           <DataGrid
             rows={participants}
             columns={columns}
             loading={loadingParticipants}
             pageSizeOptions={[5, 10, 25]}
             getRowId={(row) => row.id}
-            autoHeight
             disableRowSelectionOnClick
+            autoHeight
           />
           {errorParticipants && (
             <Typography color="error" sx={{ mt: 2 }}>

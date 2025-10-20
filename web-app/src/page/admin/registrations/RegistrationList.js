@@ -9,6 +9,7 @@ import useNotifications from "../../../hooks/useNotifications/useNotifications";
 import PageContainer from "../../../components/PageContainer";
 import { RegistrationService } from "../../../service/RegistrationService";
 import useCamps from "../../../hooks/useCamps";
+import { formatDateTime } from "../../../utils/dateUtils";
 
 const INITIAL_PAGE_SIZE = 10;
 
@@ -77,15 +78,6 @@ export default function RegistrationList() {
     [navigate, pathname, searchParams]
   );
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    try {
-      return new Date(dateString).toLocaleString();
-    } catch {
-      return "Invalid date";
-    }
-  };
-
   const loadData = React.useCallback(async () => {
     if (!selectedCamp) {
       setRowsState({ rows: [], rowCount: 0 });
@@ -104,8 +96,8 @@ export default function RegistrationList() {
         schoolName: reg.school?.name ?? "N/A",
         jerseySize: reg.jerseySize ?? "N/A",
         status: reg.status ?? "N/A",
-        registeredAt: formatDate(reg.registeredAt),
-        confirmedAt: formatDate(reg.confirmedAt),
+        registeredAt: formatDateTime(reg.registeredAt),
+        confirmedAt: formatDateTime(reg.confirmedAt),
         amountPaid: reg.price ? `$${parseFloat(reg.price).toFixed(2)}`: "$0.00",
         specialRequests: reg.specialRequests || "None",
       }));
