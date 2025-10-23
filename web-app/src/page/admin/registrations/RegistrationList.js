@@ -98,7 +98,7 @@ export default function RegistrationList() {
         status: reg.status ?? "N/A",
         registeredAt: formatDateTime(reg.registeredAt),
         confirmedAt: formatDateTime(reg.confirmedAt),
-        amountPaid: reg.price ? `$${parseFloat(reg.price).toFixed(2)}`: "$0.00",
+        amountPaid: reg.amountPaid ? `$${parseFloat(reg.amountPaid).toFixed(2)}`: "$0.00",
         specialRequests: reg.specialRequests || "None",
       }));
       setRowsState({ rows, rowCount: rows.length });
