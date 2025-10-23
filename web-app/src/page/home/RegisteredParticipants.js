@@ -33,7 +33,7 @@ export default function RegisteredParticipants() {
           jerseySize: reg.jerseySize || "N/A",
           status: reg.status ?? "N/A",
           registeredAt: formatDateTime(reg.registeredAt),
-          amountPaid: reg.amountPaid ? `$${parseFloat(reg.amountPaid).toFixed(2)}` : "Not Paid",
+          amountPaid: reg.amountPaid ? `€${parseFloat(reg.amountPaid).toFixed(2)}` : "Not Paid",
           specialRequests: reg.specialRequests || "None",
         }));
         setParticipants(formattedData);
