@@ -30,6 +30,10 @@ export default function Home() {
     }
   };
 
+  const handleViewDetails = (campId) => {
+    navigate(`/camps/${campId}/details`);
+  };
+
   return (
     <>
       <Header />
@@ -60,7 +64,9 @@ export default function Home() {
           </Box>
         ) : (
           <Grid container spacing={4} justifyContent="center">
-            {camps.map((camp) => (
+            {camps
+              .sort((a, b) => new Date(b.startDate) - new Date(a.startDate))
+              .map((camp) => (
               <Grid item key={camp.id} xs={12} sm={6} md={4}>
                 <Card 
                   sx={{
@@ -83,7 +89,7 @@ export default function Home() {
                       {formatDate(camp.startDate)} - {formatDate(camp.endDate)}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      {camp.description}
+                      For more information register and see the agenda.
                     </Typography>
                     <Typography variant="subtitle2" sx={{ mt: 1 }}>
                       Location: {camp.location}
@@ -92,18 +98,22 @@ export default function Home() {
                   </CardContent>
 
                   <CardActions sx={cardActionsStyles}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      fullWidth
-                      onClick={() => handleRegisterClick(camp.id)}
-                      sx={{
-                        ...buttonStyles,
-                        opacity: camp.isActive ? 1 : 0.5,
-                        pointerEvents: camp.isActive ? 'auto' : 'none',
-                      }}
+                    <Button 
+                      variant="outlined" 
+                      color="primary" 
+                      onClick={() => handleViewDetails(camp.id)}
+                      sx={{ ...buttonStyles, mr: 1 }}
                     >
-                      {camp.isActive ? 'Register' : 'Not Available'}
+                      View Details
+                    </Button>
+                    <Button 
+                      variant="contained" 
+                      color="primary" 
+                      onClick={() => handleRegisterClick(camp.id)}
+                      disabled={camp.registeredParticipants >= camp.maxParticipants}
+                      sx={buttonStyles}
+                    >
+                      {camp.registeredParticipants >= camp.maxParticipants ? 'FULL' : 'REGISTER'}
                     </Button>
                   </CardActions>
                 </Card>
