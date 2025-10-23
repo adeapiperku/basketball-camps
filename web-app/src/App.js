@@ -8,6 +8,7 @@ import SignUp from "./page/home/SignUp";
 import SignIn from "./page/home/SignIn";
 import Dashboard from "./components/dashboard/Dashboard";
 import CampsInformation from "./page/home/CampsInformation";
+import CampDetails from "./page/home/CampDetails";
 
 const App = () => {
   return (
@@ -21,10 +22,9 @@ const App = () => {
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route path="/registrations" element={<RegisteredParticipants />} />
         <Route path="/camps/:campId/register" element={<CampRegistrationForm />} />
+        <Route path="/camps/:campId/details" element={<CampDetails />} />
 
         <Route path="/admin/*" element={<PrivateRoute roles={['ADMIN']} component={Dashboard} />} />
-        {/* <Route path="/coach/*" element={<PrivateRoute roles={['COACH']} component={CoachLayout} />} />
-        <Route path="/participant/*" element={<PrivateRoute roles={['PARTICIPANT']} component={ParticipantLayout} />} /> */}
       </Routes>
     </Router>
   );

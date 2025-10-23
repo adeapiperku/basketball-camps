@@ -97,8 +97,8 @@ export default function CampRegistrationForm() {
       setJerseySize("");
 
       setTimeout(() => {
-        navigate("/home");
-      }, 2000);
+        navigate(`/camps/${campId}/details`);
+      }, 1000);
     } catch (err) {
       console.error("Registration error:", {
         message: err.message,

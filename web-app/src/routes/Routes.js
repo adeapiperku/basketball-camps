@@ -22,8 +22,6 @@ import AdminList from "../page/admin/admins/AdminList";
 import AdminCreate from "../page/admin/admins/AdminCreate";
 import AdminShow from "../page/admin/admins/AdminShow";
 import AdminEdit from "../page/admin/admins/AdminEdit";
-// import CampRegistrationForm from "../page/home/CampRegistrationForm";
-// import RegisteredParticipants from "../page/home/RegisteredParticipants";
 
 export const AdminRoutes = [
   {
@@ -60,13 +58,4 @@ export const AdminRoutes = [
       { path: "schools/:schoolId/edit", element: <SchoolEdit /> },
     ]
   }
-];
-
-export const CoachRoutes = [
-  { path: "/home", element: <Home /> },
-];
-
-export const ParticipantRoutes = [
-  { path: "/home", element: <Home /> },
-//   { path: "/registrations/register", element: <CampRegistrationForm /> },
 ];
