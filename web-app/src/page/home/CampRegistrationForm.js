@@ -75,7 +75,7 @@ export default function CampRegistrationForm() {
 
       console.log("Sending registration data:", registrationData);
 
-      const response = await fetch("http://localhost:8080/registrations/register",
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/registrations/register`,
         {
           method: "POST",
           headers: {

@@ -58,7 +58,7 @@ export default function CampList() {
   const fetchCoaches = async (campId) => {
     try {
       setIsLoadingCoaches(true);
-      const response = await fetch(`http://localhost:8080/camp-coaches/${campId}`);
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/camp-coaches/${campId}`);
       if (!response.ok) throw new Error('Failed to fetch coaches');
       const data = await response.json();
       setCoaches(data);
